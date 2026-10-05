@@ -1,0 +1,54 @@
+.quemsomos {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 3rem 2rem 4rem;
+}
+
+.quemsomos-hero {
+  text-align: center;
+  padding: 2rem 0 3rem;
+}
+
+.quemsomos-hero h1 {
+  font-family: 'Bungee', sans-serif;
+  color: #383266;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  margin: 0 0 1.5rem;
+  letter-spacing: 0.05em;
+}
+
+.quemsomos-hero p {
+  color: #3d5f53;
+  font-size: 1.1rem;
+  line-height: 1.7;
+  max-width: 580px;
+  margin: 0 auto;
+}
+
+.quemsomos-hero strong {
+  color: #a05796;
+  font-weight: 700;
+}
+
+.quemsomos-bloco {
+  background-color: #383266;
+  border: 2px solid #b990f5;
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.quemsomos-bloco h2 {
+  font-family: 'Bungee', sans-serif;
+  color: #b990f5;
+  font-size: 1.3rem;
+  margin: 0 0 0.75rem;
+  letter-spacing: 0.06em;
+}
+
+.quemsomos-bloco p {
+  color: #c8bfe8;
+  font-size: 1rem;
+  line-height: 1.65;
+  margin: 0;
+}

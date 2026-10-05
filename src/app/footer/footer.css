@@ -1,13 +1,13 @@
-.footer{
- background-color:rgb(56	50	102);
- border-top: 2px solid #b990f5;
- padding: 30px 20px;
- /* Faz o rodapé envolver o logo flutuante (sem isso o logo vaza para fora do rodapé) */
- display: flow-root;
+.footer {
+  background-color: #383266;
+  border-top: 2px solid #b990f5;
+  padding: 2rem;
+  display: flow-root;
 }
 
-.logo-footer{
-    width: 100px;
-    height: auto;
-    float: right;
+.logo-footer {
+  width: 100px;
+  height: auto;
+  float: right;
+  opacity: 0.9;
 }

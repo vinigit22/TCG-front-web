@@ -1,0 +1,69 @@
+.jogos-page {
+  padding: 3rem 2rem 4rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.jogos-titulo {
+  font-family: 'Bungee', sans-serif;
+  color: #383266;
+  text-align: center;
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  margin: 0 0 0.5rem;
+  letter-spacing: 0.05em;
+}
+
+.jogos-subtitulo {
+  text-align: center;
+  color: #3d5f53;
+  font-size: 1rem;
+  margin: 0 0 2.5rem;
+}
+
+.jogos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1.5rem;
+}
+
+.jogo-card {
+  background-color: #383266;
+  border: 2px solid #4a4285;
+  border-radius: 12px;
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+  text-align: center;
+}
+
+.jogo-card:hover {
+  border-color: #b990f5;
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(185, 144, 245, 0.25);
+}
+
+.jogo-logo {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.jogo-card h3 {
+  font-family: 'Bungee', sans-serif;
+  color: #e8e0ff;
+  font-size: 0.9rem;
+  margin: 0;
+  letter-spacing: 0.03em;
+}
+
+.jogo-card p {
+  color: #b990f5;
+  font-size: 0.78rem;
+  margin: 0;
+  line-height: 1.5;
+}

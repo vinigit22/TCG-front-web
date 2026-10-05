@@ -1,0 +1,77 @@
+.navbar {
+  background-color: #383266;
+  border-bottom: 2px solid #b990f5;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.navdiv {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 2rem;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.logo img {
+  height: 52px;
+  width: auto;
+  display: block;
+}
+
+.navdiv ul {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin: 0;
+  padding: 0;
+}
+
+.navdiv ul li a {
+  color: #e8e0ff;
+  text-decoration: none;
+  font-family: 'Bungee', sans-serif;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  transition: color 0.2s;
+}
+
+.navdiv ul li a:hover {
+  color: #b990f5;
+}
+
+.navdiv ul li button {
+  font-family: 'Bungee', sans-serif;
+  font-size: 0.78rem;
+  cursor: pointer;
+  padding: 0.45rem 1.2rem;
+  border-radius: 6px;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+}
+
+/* Botão "Entrar" — outline lavanda */
+.navdiv ul li:nth-last-child(2) button {
+  background: transparent;
+  color: #e8e0ff;
+  border: 2px solid #b990f5;
+}
+
+.navdiv ul li:nth-last-child(2) button:hover {
+  background: #b990f5;
+  color: #383266;
+}
+
+/* Botão "Cadastro" — preenchido magenta */
+.navdiv ul li:last-child button {
+  background: #a05796;
+  color: #ffffff;
+  border: 2px solid #a05796;
+}
+
+.navdiv ul li:last-child button:hover {
+  background: #c06db0;
+  border-color: #c06db0;
+}

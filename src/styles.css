@@ -1,7 +1,27 @@
-/* You can add global styles to this file, and also import other style files */
 @import url('https://fonts.googleapis.com/css2?family=Bungee&display=swap');
 
-/* Sem a margem padrão do navegador, o cabeçalho e o rodapé ocupam a largura toda */
+:root {
+  --purple: #383266;
+  --purple-light: #4a4285;
+  --accent: #b990f5;
+  --accent-hover: #d4b8ff;
+  --green-bg: #bbd2a5;
+  --green-dark: #3d5f53;
+  --magenta: #a05796;
+  --magenta-hover: #c06db0;
+  --text-on-dark: #e8e0ff;
+  --input-bg: #2a2560;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
+  font-family: system-ui, -apple-system, sans-serif;
+  background-color: var(--green-bg);
+  color: var(--green-dark);
 }

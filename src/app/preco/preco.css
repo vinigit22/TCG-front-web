@@ -1,0 +1,133 @@
+.preco-page {
+  padding: 3rem 2rem 4rem;
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.preco-titulo {
+  font-family: 'Bungee', sans-serif;
+  color: #383266;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  margin: 0 0 0.5rem;
+  letter-spacing: 0.05em;
+}
+
+.preco-subtitulo {
+  color: #3d5f53;
+  font-size: 1.05rem;
+  margin: 0 0 3rem;
+}
+
+.planos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 2rem;
+  align-items: start;
+}
+
+.plano-card {
+  background-color: #383266;
+  border: 2px solid #4a4285;
+  border-radius: 16px;
+  padding: 2.5rem 2rem;
+  text-align: left;
+  position: relative;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.plano-card.destaque {
+  border-color: #b990f5;
+  box-shadow: 0 8px 32px rgba(185, 144, 245, 0.3);
+}
+
+.plano-badge {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #a05796;
+  color: #ffffff;
+  font-family: 'Bungee', sans-serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  padding: 0.3rem 1rem;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+.plano-nome {
+  font-family: 'Bungee', sans-serif;
+  color: #e8e0ff;
+  font-size: 1.4rem;
+  margin: 0 0 1rem;
+  letter-spacing: 0.06em;
+}
+
+.plano-preco {
+  font-family: 'Bungee', sans-serif;
+  color: #b990f5;
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
+  line-height: 1;
+}
+
+.plano-preco span {
+  font-size: 1rem;
+  color: #8878b8;
+}
+
+.plano-features {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.plano-features li {
+  color: #c8bfe8;
+  font-size: 0.9rem;
+  padding-left: 1.4rem;
+  position: relative;
+}
+
+.plano-features li::before {
+  content: '✓';
+  color: #b990f5;
+  position: absolute;
+  left: 0;
+  font-weight: 700;
+}
+
+.btn-plano {
+  font-family: 'Bungee', sans-serif;
+  width: 100%;
+  padding: 0.85rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  letter-spacing: 0.08em;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+  background: transparent;
+  color: #e8e0ff;
+  border: 2px solid #b990f5;
+}
+
+.btn-plano:hover {
+  background: #b990f5;
+  color: #383266;
+}
+
+.btn-destaque {
+  background-color: #a05796;
+  color: #ffffff;
+  border-color: #a05796;
+}
+
+.btn-destaque:hover {
+  background-color: #c06db0;
+  border-color: #c06db0;
+  color: #ffffff;
+}

@@ -1,20 +1,34 @@
-.apresentacao-container{
-  font-family: "Bungee", sans-serif;
+.apresentacao-container {
+  font-family: 'Bungee', sans-serif;
   font-weight: 400;
   font-style: normal;
-  font-size: large; 
-  background-color: rgb(187	210	165); 
-}  
+  background-color: #bbd2a5;
+  padding: 5rem 2rem 4rem;
+  min-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
 
-.titulo-apresentacao{
-    color: rgb(	61	95	83);
-    text-align: center;
+.titulo-apresentacao {
+  color: #3d5f53;
+  text-align: center;
+  font-size: clamp(1rem, 2.5vw, 1.6rem);
+  margin: 0 0 2rem;
+  letter-spacing: 0.05em;
+  opacity: 0.85;
 }
-.texto-apresentacao{
-    color: rgb(	61	95	83);
-    text-align: center;
+
+.texto-apresentacao {
+  color: #3d5f53;
+  text-align: center;
+  font-size: clamp(2.5rem, 7vw, 5rem);
+  margin: 0.2rem 0;
+  line-height: 1.1;
+  letter-spacing: 0.03em;
 }
-.textocor{
-    color: rgb(	160	87	150);
-    text-align: center;
+
+.textocor {
+  color: #a05796;
 }
