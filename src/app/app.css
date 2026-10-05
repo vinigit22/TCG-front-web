@@ -1,0 +1,10 @@
+/* Rodapé sempre no fim da página, mesmo quando o conteúdo é curto */
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.content {
+  flex: 1;
+}

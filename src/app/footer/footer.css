@@ -2,8 +2,8 @@
  background-color:rgb(56	50	102);
  border-top: 2px solid #b990f5;
  padding: 30px 20px;
- min-height: 0vh;
- flex:1;
+ /* Faz o rodapé envolver o logo flutuante (sem isso o logo vaza para fora do rodapé) */
+ display: flow-root;
 }
 
 .logo-footer{

@@ -1,59 +1,73 @@
-# TcgTorneiosWeb
+# TCG Torneios — painel web
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.22.
+Painel (Angular 21) para lojas criarem e administrarem torneios e eventos de card game, e para o administrador da plataforma. Jogadores não usam o painel; eles usam o app mobile.
 
-## Development server
-
-To start a local development server, run:
+## Como rodar
 
 ```bash
-ng serve
+npm ci
+npm start          # http://localhost:4200
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Outros comandos: `npm run build` (gera `dist/`, com pré-renderização das páginas públicas) e `npm test` (Vitest).
 
-## Code scaffolding
+## Dados: mock ou API
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+Tudo fica em `src/app/core/configuracao.ts`:
 
-```bash
-ng generate component component-name
+| Campo | Para que serve |
+|---|---|
+| `usarMockApi` | `true` (padrão): o painel responde com os dados de exemplo de `core/mocks`, sem precisar do backend. As consultas e o login funcionam; as alterações (criar torneio, lançar resultado…) respondem com erro 503 pedindo a API. `false`: os services chamam o [TCGBackend](../TCGBackend). |
+| `apiUrl` | Endereço do backend. Em desenvolvimento: `http://localhost:8080` (`./mvnw spring-boot:run` na pasta do backend). |
+| `tiposDeContaPermitidos` | Tipos de conta que entram no painel (`LOJA` e `ADMIN`). Uma conta `JOGADOR` recebe a mensagem de que o painel é das lojas. |
+
+O backend já aceita chamadas de `http://localhost:*` (CORS em `app.cors.origens`, variável `CORS_ORIGENS`). Ao publicar o painel em outro endereço, inclua esse endereço ali.
+
+Os componentes não sabem de onde vêm os dados: os services fazem as mesmas chamadas HTTP nos dois modos, e o `mockApiInterceptor` responde no lugar da API quando `usarMockApi` é `true`. O mock devolve o JSON no mesmo formato do backend.
+
+### Contas de exemplo
+
+As mesmas do `data.sql` do backend:
+
+| Conta | Email | Senha |
+|---|---|---|
+| Loja (Card House, id 1) | `contato@cardhouse.com.br` | `123456` |
+| Administrador | `admin@tcg.com` | `admin123` |
+| Jogador (não entra no painel) | `eric@email.com` | `123456` |
+
+## Estrutura
+
+```
+src/app/
+├── core/                    camada de integração com o backend
+│   ├── configuracao.ts        mock ou API, endereço da API, urlApi() e urlImagem()
+│   ├── models/api.ts          formato exato do JSON do backend (requests e responses)
+│   ├── models/sessao.ts       conta logada guardada no navegador
+│   ├── services/              uma classe por recurso: auth, sessao, torneio, inscricao, partida,
+│   │                          resultado, loja, evento, catalogo (jogos, formatos, endereços,
+│   │                          jogadores), notificacao
+│   ├── http/                  interceptors (token JWT, 401 -> login, mock) e parametros()
+│   ├── mocks/                 dados de exemplo e as rotas simuladas
+│   ├── erros.ts               mensagemDeErro(): texto do campo "detail" do backend
+│   ├── regras.ts              transições de status do torneio e vagas permitidas (iguais às do backend)
+│   ├── rotulos.ts             textos em português dos status e tipos
+│   ├── jogos.ts               logo de cada jogo
+│   └── autenticado.guard.ts   protege as páginas do painel
+├── header/, footer/         layout
+└── home/, jogos/, preco/, quemsomos/, torneios/, login/, cadastro/   páginas
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+As páginas do painel (depois do login) devem ficar em `painel/...` com `canActivate: [autenticadoGuard]`. O `app.routes.server.ts` já renderiza `painel/**` só no navegador, porque a sessão fica no `localStorage`.
 
-```bash
-ng generate --help
+### Exemplo de uso num componente
+
+```ts
+private torneios = inject(TorneioService);
+private sessao = inject(SessaoService);
+
+lista = toSignal(
+  this.torneios.listar({ lojaId: this.sessao.conta()!.id, status: ['INSCRICOES_ABERTAS'] }),
+);
 ```
 
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Numa conta `LOJA`, o id da conta é o id da loja (`/lojas/{id}`). Para mostrar um erro ao usuário, use `mensagemDeErro(erro, 'Não foi possível salvar')`.
