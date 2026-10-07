@@ -1,13 +1,80 @@
 .footer {
-  background-color: #383266;
-  border-top: 2px solid #b990f5;
-  padding: 2rem;
-  display: flow-root;
+  background:
+    radial-gradient(600px 240px at 90% 0%, rgb(108 76 224 / 0.3), transparent 70%), var(--roxo-950);
+  color: var(--tinta-400);
+  border-top: 1px solid rgb(179 160 247 / 0.16);
+}
+
+.footer-grade {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) repeat(2, minmax(0, 1fr));
+  gap: 2rem;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 3rem 2rem 2rem;
 }
 
 .logo-footer {
-  width: 100px;
+  width: 120px;
   height: auto;
-  float: right;
-  opacity: 0.9;
+}
+
+.marca p {
+  max-width: 340px;
+  margin-top: 1rem;
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+.footer h2 {
+  margin-bottom: 0.85rem;
+  color: #fff;
+  font-family: var(--fonte-marca);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+}
+
+.footer ul {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.footer a {
+  color: var(--tinta-300);
+  font-size: 0.875rem;
+  text-decoration: none;
+}
+
+.footer a:hover {
+  color: var(--verde-300);
+}
+
+.footer-base {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.5rem 2rem;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 1.25rem 2rem 2rem;
+  border-top: 1px solid rgb(255 255 255 / 0.06);
+  font-size: 0.78rem;
+  color: var(--tinta-500);
+}
+
+@media (max-width: 720px) {
+  .footer-grade {
+    grid-template-columns: 1fr 1fr;
+    padding: 2.5rem 1.25rem 1.5rem;
+  }
+  .marca {
+    grid-column: 1 / -1;
+  }
+  .footer-base {
+    padding: 1.25rem;
+  }
 }

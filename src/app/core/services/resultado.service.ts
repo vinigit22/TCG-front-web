@@ -12,8 +12,13 @@ export class ResultadoService {
   private readonly http = inject(HttpClient);
 
   listarDoTorneio(torneioId: number): Observable<TorneioResultado[]> {
+    return this.listar({ torneioId });
+  }
+
+  // Sem filtro = todas as classificações (pódios de todos os torneios)
+  listar(filtro: { torneioId?: number; jogadorId?: number } = {}): Observable<TorneioResultado[]> {
     return this.http.get<TorneioResultado[]>(urlApi('/torneio-resultados'), {
-      params: parametros({ torneioId }),
+      params: parametros({ torneioId: filtro.torneioId, jogadorId: filtro.jogadorId }),
     });
   }
 

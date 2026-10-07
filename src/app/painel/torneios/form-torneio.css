@@ -1,0 +1,145 @@
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+@media (max-width: 1180px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+  .previa {
+    display: none;
+  }
+}
+
+fieldset {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+legend {
+  padding: 0;
+  margin-bottom: 0.4rem;
+}
+
+.local .campo-ajuda {
+  margin-top: 0.15rem;
+}
+
+/* ---------------------------------------------------------------- Prévia */
+
+.previa {
+  position: sticky;
+  top: 84px;
+}
+
+.previa-rotulo {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.65rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--cor-texto-3);
+}
+
+.cartao-app {
+  overflow: hidden;
+  border-radius: 20px;
+  background: var(--cor-superficie);
+  border: 1px solid var(--cor-borda);
+  box-shadow: var(--sombra-md);
+}
+
+.capa {
+  position: relative;
+  height: 120px;
+  background:
+    radial-gradient(160px 120px at 85% 10%, rgb(52 207 150 / 0.55), transparent 70%),
+    linear-gradient(135deg, var(--roxo-700), var(--roxo-500));
+  background-size: cover;
+  background-position: center;
+}
+
+.capa-jogo {
+  position: absolute;
+  left: 0.85rem;
+  bottom: 0.75rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: var(--raio-total);
+  background: rgb(19 12 42 / 0.6);
+  backdrop-filter: blur(6px);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.corpo-app {
+  padding: 1rem 1.1rem 1.15rem;
+}
+
+.corpo-app h3 {
+  margin-top: 0.6rem;
+  font-size: 1.1rem;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+.loja-app {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.3rem;
+  font-size: 0.8125rem;
+  color: var(--cor-texto-3);
+}
+
+dl {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0.95rem 0 0;
+}
+
+dl div {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 0.8125rem;
+}
+
+dt {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  background: var(--roxo-50);
+  color: var(--roxo-600);
+}
+
+dd {
+  margin: 0;
+  font-weight: 600;
+}
+
+dd::first-letter {
+  text-transform: uppercase;
+}
+
+.premio {
+  display: flex;
+  gap: 0.45rem;
+  margin-top: 0.9rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 10px;
+  background: var(--verde-50);
+  color: var(--verde-800);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}

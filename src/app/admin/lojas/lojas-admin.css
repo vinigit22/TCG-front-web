@@ -1,0 +1,29 @@
+.abas-cartao {
+  padding: 0 0.75rem;
+}
+
+.barra {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+.faltando {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: var(--ambar-700);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.contato span {
+  display: block;
+  font-size: 0.8125rem;
+}
+
+.ativos {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--verde-700);
+  font-weight: 600;
+}

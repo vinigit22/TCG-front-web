@@ -1,0 +1,299 @@
+<div class="pagina">
+  <header>
+    <a class="voltar" [routerLink]="id ? ['/painel/torneios', id] : '/painel/torneios'">
+      <app-icone nome="seta-esquerda" [tamanho]="15" />
+      {{ id ? 'Voltar ao torneio' : 'Torneios' }}
+    </a>
+    <div class="pagina-cabecalho">
+      <div>
+        <h1>{{ id ? 'Editar torneio' : 'Novo torneio' }}</h1>
+        <p>
+          @if (id) {
+            As mudanças aparecem no app assim que você salvar.
+          } @else {
+            O torneio nasce como rascunho: só aparece no app quando as inscrições forem abertas.
+          }
+        </p>
+      </div>
+    </div>
+  </header>
+
+  @if (bloqueado()) {
+    <div class="faixa faixa-ambar">
+      <app-icone nome="cadeado" />
+      <p>
+        <strong>Torneio finalizado.</strong> O backend não aceita mais alterações neste torneio.
+      </p>
+    </div>
+  }
+
+  @if (id && torneio.erro()) {
+    <div class="faixa faixa-vermelha">
+      <app-icone nome="alerta" />
+      <p>{{ torneio.erro() }}</p>
+    </div>
+  }
+
+  <div class="layout">
+    <form class="cartao" id="form-torneio" [formGroup]="form" (ngSubmit)="salvar(false)" novalidate>
+      <section class="secao-form">
+        <header>
+          <h2>Informações</h2>
+          <p>Nome, jogo e formato que os jogadores vão ver.</p>
+        </header>
+        <div class="form-grade">
+          <label class="campo inteiro">
+            <span class="campo-rotulo">Nome do torneio</span>
+            <input
+              class="controle"
+              formControlName="titulo"
+              placeholder="Ex.: Liga Pokémon de Outubro"
+              maxlength="180"
+            />
+            @if (erro('titulo', 'O nome'); as mensagem) {
+              <span class="campo-erro">{{ mensagem }}</span>
+            }
+          </label>
+          <label class="campo">
+            <span class="campo-rotulo">Jogo</span>
+            <select class="controle" formControlName="jogoId">
+              <option [ngValue]="null" disabled>Escolha o jogo</option>
+              @for (jogo of jogos(); track jogo.id) {
+                <option [ngValue]="jogo.id">{{ jogo.nome }}</option>
+              }
+            </select>
+            @if (erro('jogoId', 'O jogo'); as mensagem) {
+              <span class="campo-erro">{{ mensagem }}</span>
+            }
+          </label>
+          <label class="campo">
+            <span class="campo-rotulo">Formato <span class="opcional">(opcional)</span></span>
+            <select class="controle" formControlName="formatoId">
+              <option [ngValue]="null">
+                {{ formatos().length ? 'Sem formato definido' : 'Escolha o jogo primeiro' }}
+              </option>
+              @for (formato of formatos(); track formato.id) {
+                <option [ngValue]="formato.id">{{ formato.nome }}</option>
+              }
+            </select>
+          </label>
+          <label class="campo inteiro">
+            <span class="campo-rotulo">Descrição <span class="opcional">(opcional)</span></span>
+            <textarea
+              class="controle"
+              formControlName="descricao"
+              rows="4"
+              placeholder="Regras, formato das partidas (melhor de 3), o que levar..."
+            ></textarea>
+          </label>
+          <label class="campo inteiro">
+            <span class="campo-rotulo"
+              >Imagem de capa <span class="opcional">(URL, opcional)</span></span
+            >
+            <input class="controle" formControlName="imagem" type="url" placeholder="https://..." />
+          </label>
+        </div>
+      </section>
+
+      <section class="secao-form">
+        <header>
+          <h2>Data e local</h2>
+          <p>Quando começa, até quando dá para se inscrever e onde vai ser.</p>
+        </header>
+        <div class="form-grade">
+          <label class="campo">
+            <span class="campo-rotulo">Início</span>
+            <input class="controle" type="datetime-local" formControlName="dataInicio" />
+            @if (erro('dataInicio', 'O início'); as mensagem) {
+              <span class="campo-erro">{{ mensagem }}</span>
+            }
+          </label>
+          <label class="campo">
+            <span class="campo-rotulo"
+              >Inscrições até <span class="opcional">(opcional)</span></span
+            >
+            <input
+              class="controle"
+              type="datetime-local"
+              formControlName="inscricoesAte"
+              [attr.aria-invalid]="form.hasError('prazoDepoisDoInicio') ? 'true' : null"
+            />
+            @if (form.hasError('prazoDepoisDoInicio')) {
+              <span class="campo-erro">O prazo não pode ser depois do início do torneio.</span>
+            } @else {
+              <span class="campo-ajuda">Ao fim do prazo, as inscrições fecham sozinhas.</span>
+            }
+          </label>
+          <fieldset class="campo inteiro local">
+            <legend class="campo-rotulo">Local</legend>
+            <div class="opcoes">
+              <label class="opcao">
+                <input type="radio" formControlName="local" value="loja" />
+                <span><app-icone nome="loja" [tamanho]="16" /> Na loja</span>
+              </label>
+              <label class="opcao">
+                <input type="radio" formControlName="local" value="outro" />
+                <span><app-icone nome="local" [tamanho]="16" /> Em outro endereço</span>
+              </label>
+            </div>
+            @if (valores().local === 'loja') {
+              <span class="campo-ajuda">
+                @if (loja.dados()?.endereco; as enderecoLoja) {
+                  {{ enderecoEmTexto(enderecoLoja) }}
+                } @else {
+                  Sua loja ainda não tem endereço.
+                  <a routerLink="/painel/loja">Cadastre no perfil da loja</a>.
+                }
+              </span>
+            }
+          </fieldset>
+          @if (valores().local === 'outro') {
+            <div class="inteiro">
+              <app-campos-endereco [form]="endereco" />
+            </div>
+          }
+        </div>
+      </section>
+
+      <section class="secao-form">
+        <header>
+          <h2>Vagas e inscrição</h2>
+          <p>A chave é eliminatória: o número de vagas é sempre uma potência de 2.</p>
+        </header>
+        <div class="form-grade">
+          <fieldset class="campo inteiro">
+            <legend class="campo-rotulo">Vagas</legend>
+            <div class="opcoes">
+              @for (vagas of vagasPermitidas; track vagas) {
+                <label class="opcao">
+                  <input type="radio" formControlName="vagasMax" [value]="vagas" />
+                  <span>{{ vagas }}</span>
+                </label>
+              }
+            </div>
+            <span class="campo-ajuda"
+              >Quem se inscrever depois de lotar entra na lista de espera.</span
+            >
+          </fieldset>
+          <label class="campo">
+            <span class="campo-rotulo">Taxa de inscrição</span>
+            <div class="controle-grupo">
+              <span class="controle-prefixo">R$</span>
+              <input
+                class="controle"
+                type="number"
+                min="0"
+                step="0.01"
+                formControlName="taxaInscricao"
+                inputmode="decimal"
+              />
+            </div>
+            @if (erro('taxaInscricao', 'A taxa'); as mensagem) {
+              <span class="campo-erro">{{ mensagem }}</span>
+            } @else {
+              <span class="campo-ajuda"
+                >Use 0 para torneio gratuito. O pagamento é feito na loja.</span
+              >
+            }
+          </label>
+          <label class="campo inteiro">
+            <span class="campo-rotulo">Premiação <span class="opcional">(opcional)</span></span>
+            <textarea
+              class="controle"
+              formControlName="premiacao"
+              rows="2"
+              placeholder="Ex.: 3 boosters para o campeão e 1 para o vice"
+            ></textarea>
+          </label>
+        </div>
+      </section>
+
+      <footer class="cartao-rodape">
+        <a
+          class="btn btn-fantasma"
+          [routerLink]="id ? ['/painel/torneios', id] : '/painel/torneios'"
+          >Cancelar</a
+        >
+        @if (id) {
+          <button
+            type="submit"
+            class="btn btn-primario"
+            [disabled]="bloqueado()"
+            [attr.aria-busy]="salvando() === 'rascunho'"
+          >
+            <app-icone nome="check" [tamanho]="16" />
+            Salvar alterações
+          </button>
+        } @else {
+          <button
+            type="submit"
+            class="btn btn-secundario"
+            [disabled]="!!salvando()"
+            [attr.aria-busy]="salvando() === 'rascunho'"
+          >
+            Salvar rascunho
+          </button>
+          <button
+            type="button"
+            class="btn btn-primario"
+            [disabled]="!!salvando()"
+            [attr.aria-busy]="salvando() === 'abrir'"
+            (click)="salvar(true)"
+          >
+            <app-icone nome="jogar" [tamanho]="14" />
+            Salvar e abrir inscrições
+          </button>
+        }
+      </footer>
+    </form>
+
+    <aside class="previa" aria-label="Prévia no app">
+      <p class="previa-rotulo"><app-icone nome="olho" [tamanho]="15" /> Como aparece no app</p>
+      <article class="cartao-app">
+        <div
+          class="capa"
+          [style.background-image]="valores().imagem ? 'url(' + valores().imagem + ')' : null"
+        >
+          <span class="capa-jogo">{{ previa().jogo }}</span>
+        </div>
+        <div class="corpo-app">
+          <app-selo-torneio [status]="torneio.dados()?.status ?? 'RASCUNHO'" />
+          <h3>{{ previa().titulo }}</h3>
+          <p class="loja-app">
+            <app-icone nome="loja" [tamanho]="14" />
+            {{ loja.dados()?.nome }}
+          </p>
+          <dl>
+            <div>
+              <dt><app-icone nome="calendario" [tamanho]="14" /></dt>
+              <dd>
+                @if (previa().data; as data) {
+                  {{ data | date: "EEE, d 'de' MMM · HH:mm" }}
+                } @else {
+                  Data a definir
+                }
+              </dd>
+            </div>
+            <div>
+              <dt><app-icone nome="cartas" [tamanho]="14" /></dt>
+              <dd>{{ previa().formato ?? 'Formato livre' }}</dd>
+            </div>
+            <div>
+              <dt><app-icone nome="usuarios" [tamanho]="14" /></dt>
+              <dd>{{ previa().vagas }} vagas</dd>
+            </div>
+            <div>
+              <dt><app-icone nome="dinheiro" [tamanho]="14" /></dt>
+              <dd>{{ previa().taxa > 0 ? (previa().taxa | currency) : 'Inscrição grátis' }}</dd>
+            </div>
+          </dl>
+          @if (previa().premiacao) {
+            <p class="premio">
+              <app-icone nome="trofeu" [tamanho]="14" /> {{ previa().premiacao }}
+            </p>
+          }
+        </div>
+      </article>
+    </aside>
+  </div>
+</div>

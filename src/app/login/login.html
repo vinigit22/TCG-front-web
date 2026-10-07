@@ -1,13 +1,77 @@
 <section class="login-page">
   <div class="login-container">
-    <h1 class="login-titulo">ACESSAR</h1>
-    <form class="login-form">
-      <label for="email">Email</label>
-      <input type="email" id="email" placeholder="seu@email.com">
-      <label for="senha">Senha</label>
-      <input type="password" id="senha" placeholder="••••••••">
-      <button type="submit" class="btn-entrar">ENTRAR</button>
-    </form>
-    <p class="login-link">Não tem conta? <a href="/cadastro">Cadastre sua loja</a></p>
+    <aside class="login-lado" aria-hidden="true">
+      <p class="lado-kicker">PAINEL TOPDECK</p>
+      <h2>Sua loja e seus torneios num lugar só.</h2>
+      <ul>
+        <li>Crie torneios e abra as inscrições no app</li>
+        <li>Check-in, chave e resultados no dia</li>
+        <li>Eventos de troca para a comunidade</li>
+      </ul>
+    </aside>
+
+    <div class="login-form-area">
+      <h1 class="login-titulo">ACESSAR</h1>
+      <p class="login-sub">Para lojas e para a equipe TopDeck. Jogadores usam o app no celular.</p>
+
+      @if (logado(); as conta) {
+        <div class="ja-logado">
+          <p>
+            Você já está conectado como <strong>{{ conta.nome }}</strong
+            >.
+          </p>
+          <a [routerLink]="areaLogada()" class="btn-entrar">IR PARA O PAINEL</a>
+        </div>
+      }
+
+      <form class="login-form" [formGroup]="form" (ngSubmit)="entrar()" novalidate>
+        <label for="email">Email</label>
+        <input
+          type="email"
+          id="email"
+          formControlName="email"
+          placeholder="contato@loja.com"
+          autocomplete="username"
+        />
+
+        <label for="senha">Senha</label>
+        <div class="senha">
+          <input
+            [type]="mostrarSenha() ? 'text' : 'password'"
+            id="senha"
+            formControlName="senha"
+            placeholder="••••••••"
+            autocomplete="current-password"
+          />
+          <button type="button" class="mostrar" (click)="mostrarSenha.set(!mostrarSenha())">
+            {{ mostrarSenha() ? 'Ocultar' : 'Mostrar' }}
+          </button>
+        </div>
+
+        @if (erro()) {
+          <p class="login-erro" role="alert">{{ erro() }}</p>
+        }
+
+        <button type="submit" class="btn-entrar" [disabled]="entrando()">
+          {{ entrando() ? 'ENTRANDO…' : 'ENTRAR' }}
+        </button>
+      </form>
+
+      @if (modoMock) {
+        <div class="demo">
+          <p><strong>Modo demonstração.</strong> Entre com uma conta de teste:</p>
+          <div class="demo-contas">
+            @for (conta of contasDeTeste; track conta.email) {
+              <button type="button" (click)="preencher(conta)">
+                <b>{{ conta.rotulo }}</b>
+                <span>{{ conta.email }}</span>
+              </button>
+            }
+          </div>
+        </div>
+      }
+
+      <p class="login-link">Não tem conta? <a routerLink="/cadastro">Cadastre sua loja</a></p>
+    </div>
   </div>
 </section>

@@ -117,6 +117,25 @@ export interface Conta {
   deletadoEm: string | null;
 }
 
+// GET /administradores. O id do administrador é o id da conta.
+export interface Administrador {
+  contaId: number;
+  nome: string;
+  criadoEm: string;
+}
+
+// POST /administradores (só admin): cria a conta ADMIN e o perfil de uma vez
+export interface RegistroAdministradorRequest {
+  email: string;
+  senha: string;
+  nome: string;
+}
+
+// PUT /administradores/{id}
+export interface AdministradorRequest {
+  nome: string;
+}
+
 // ---------------------------------------------------------------------------
 // Catálogo
 // ---------------------------------------------------------------------------
@@ -129,11 +148,26 @@ export interface Jogo {
   ativo: boolean;
 }
 
+// POST/PUT /jogos (só admin). Slug vazio = gerado a partir do nome.
+export interface JogoRequest {
+  nome: string;
+  slug?: string | null;
+  icone?: string | null;
+  ativo?: boolean | null;
+}
+
 export interface Formato {
   id: number;
   jogo: Jogo;
   nome: string;
   ativo: boolean;
+}
+
+// POST/PUT /formatos (só admin)
+export interface FormatoRequest {
+  jogoId: number;
+  nome: string;
+  ativo?: boolean | null;
 }
 
 export interface Endereco {
@@ -541,4 +575,15 @@ export interface Notificacao {
   lida: boolean;
   lidaEm: string | null;
   criadoEm: string;
+}
+
+// POST /notificacoes (só admin): uma notificação para uma conta. Não há envio em massa na API.
+export interface NotificacaoRequest {
+  contaId: number;
+  tipo: TipoNotificacao;
+  titulo: string;
+  mensagem: string;
+  torneioId?: number | null;
+  eventoId?: number | null;
+  partidaId?: number | null;
 }

@@ -1,29 +1,47 @@
 .cadastro-page {
-  min-height: calc(100vh - 130px);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 2rem;
-  background-color: #bbd2a5;
+  min-height: calc(100vh - 130px);
+  padding: 3rem 1.5rem;
+  background:
+    radial-gradient(700px 400px at 100% 0%, var(--roxo-100), transparent 70%),
+    radial-gradient(600px 400px at 0% 100%, var(--verde-100), transparent 70%), var(--cor-pagina);
 }
 
 .cadastro-container {
-  background-color: #383266;
-  border: 2px solid #b990f5;
-  border-radius: 16px;
-  padding: 2.5rem;
+  position: relative;
   width: 100%;
-  max-width: 520px;
-  box-shadow: 0 8px 32px rgba(56, 50, 102, 0.4);
+  max-width: 540px;
+  padding: 2.75rem 2.5rem;
+  border-radius: 28px;
+  background: var(--cor-superficie);
+  box-shadow: var(--sombra-lg);
+  overflow: hidden;
+}
+
+.cadastro-container::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: 6px;
+  background: linear-gradient(90deg, var(--roxo-500), var(--verde-400));
 }
 
 .cadastro-titulo {
-  font-family: 'Bungee', sans-serif;
-  color: #e8e0ff;
+  font-family: var(--fonte-marca);
+  font-weight: 400;
+  color: var(--roxo-900);
+  font-size: 1.7rem;
+  letter-spacing: 0.05em;
   text-align: center;
-  font-size: 1.8rem;
-  margin: 0 0 2rem;
-  letter-spacing: 0.06em;
+}
+
+.cadastro-sub {
+  margin: 0.5rem 0 2rem;
+  color: var(--cor-texto-3);
+  font-size: 0.9rem;
+  text-align: center;
 }
 
 .cadastro-form {
@@ -32,71 +50,103 @@
 }
 
 .cadastro-form label {
-  color: #b990f5;
-  font-size: 0.75rem;
+  margin-bottom: 0.4rem;
+  color: var(--tinta-700);
+  font-size: 0.8125rem;
   font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  margin-bottom: 0.35rem;
+}
+
+.opcional {
+  font-weight: 500;
+  color: var(--cor-texto-3);
 }
 
 .cadastro-form input,
 .cadastro-form textarea {
-  padding: 0.7rem 1rem;
-  border-radius: 8px;
-  border: 2px solid #4a4285;
-  background-color: #2a2560;
-  color: #e8e0ff;
-  font-size: 1rem;
+  width: 100%;
+  margin-bottom: 1.1rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--cor-borda-forte);
+  border-radius: 12px;
+  background: var(--cor-superficie);
+  color: var(--cor-texto);
   font-family: inherit;
-  transition: border-color 0.2s;
-  margin-bottom: 1rem;
+  font-size: 0.95rem;
   resize: vertical;
+  transition:
+    border-color var(--transicao),
+    box-shadow var(--transicao);
 }
 
 .cadastro-form input:focus,
 .cadastro-form textarea:focus {
   outline: none;
-  border-color: #b990f5;
+  border-color: var(--roxo-500);
+  box-shadow: var(--anel-foco);
+}
+
+.cadastro-form input.ng-invalid.ng-touched {
+  border-color: var(--vermelho-500);
+  margin-bottom: 0.35rem;
 }
 
 .cadastro-form input::placeholder,
 .cadastro-form textarea::placeholder {
-  color: #6b5fa0;
+  color: var(--tinta-400);
+}
+
+.campo-erro {
+  margin-bottom: 1rem;
+}
+
+.cadastro-erro {
+  margin: 0 0 1rem;
+  padding: 0.7rem 0.9rem;
+  border-radius: 10px;
+  background: var(--vermelho-100);
+  color: var(--vermelho-700);
+  font-size: 0.85rem;
+}
+
+.cadastro-demo {
+  margin: 0 0 1rem;
+  padding: 0.6rem 0.85rem;
+  border-radius: 10px;
+  background: var(--ambar-100);
+  color: var(--ambar-700);
+  font-size: 0.8rem;
 }
 
 .btn-cadastrar {
-  font-family: 'Bungee', sans-serif;
-  background-color: #a05796;
-  color: #ffffff;
-  border: none;
-  border-radius: 8px;
-  padding: 0.85rem;
-  font-size: 1rem;
-  cursor: pointer;
+  height: 52px;
+  border: 0;
+  border-radius: 14px;
+  background: var(--verde-400);
+  color: var(--verde-950);
+  font-family: var(--fonte-marca);
+  font-size: 0.95rem;
   letter-spacing: 0.08em;
-  transition: background-color 0.2s;
-  margin-top: 0.25rem;
+  box-shadow: 0 14px 28px -14px rgb(52 207 150 / 0.9);
+  transition: background-color var(--transicao);
 }
 
-.btn-cadastrar:hover {
-  background-color: #c06db0;
+.btn-cadastrar:hover:not(:disabled) {
+  background: var(--verde-300);
+}
+
+.btn-cadastrar:disabled {
+  opacity: 0.7;
+  cursor: wait;
 }
 
 .cadastro-link {
+  margin-top: 1.5rem;
   text-align: center;
-  color: #b990f5;
+  color: var(--cor-texto-3);
   font-size: 0.875rem;
-  margin: 1.5rem 0 0;
 }
 
 .cadastro-link a {
-  color: #e8e0ff;
-  text-decoration: none;
-  font-weight: 600;
-}
-
-.cadastro-link a:hover {
-  color: #b990f5;
-  text-decoration: underline;
+  color: var(--roxo-600);
+  font-weight: 700;
 }

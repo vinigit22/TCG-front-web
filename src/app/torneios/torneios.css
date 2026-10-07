@@ -1,23 +1,23 @@
 .torneios-page {
-  padding: 3rem 2rem 4rem;
   max-width: 1000px;
   margin: 0 auto;
+  padding: 4rem 2rem 5rem;
 }
 
 .torneios-titulo {
-  font-family: 'Bungee', sans-serif;
-  color: #383266;
+  font-family: var(--fonte-marca);
+  font-weight: 400;
+  color: var(--roxo-900);
   font-size: clamp(2rem, 5vw, 3rem);
-  margin: 0 0 0.5rem;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
   text-align: center;
 }
 
 .torneios-subtitulo {
-  color: #3d5f53;
+  margin: 0.6rem 0 2.75rem;
+  color: var(--cor-texto-2);
   text-align: center;
-  font-size: 1rem;
-  margin: 0 0 2.5rem;
+  font-size: 1.05rem;
 }
 
 .torneios-lista {
@@ -27,87 +27,104 @@
 }
 
 .torneio-card {
-  background-color: #383266;
-  border: 2px solid #4a4285;
-  border-radius: 12px;
-  padding: 1.5rem;
-  transition: border-color 0.2s;
+  position: relative;
+  padding: 1.5rem 1.75rem;
+  border-radius: 20px;
+  background: var(--cor-superficie);
+  border: 1px solid var(--cor-borda);
+  box-shadow: var(--sombra-xs);
+  overflow: hidden;
+  transition:
+    border-color var(--transicao),
+    box-shadow var(--transicao),
+    transform var(--transicao);
+}
+
+.torneio-card::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 5px;
+  background: linear-gradient(180deg, var(--roxo-500), var(--verde-400));
 }
 
 .torneio-card:hover {
-  border-color: #b990f5;
+  border-color: var(--roxo-200);
+  box-shadow: var(--sombra-md);
+  transform: translateY(-2px);
 }
 
 .torneio-jogo-tag {
   display: inline-block;
-  background-color: #a05796;
-  color: #ffffff;
-  font-family: 'Bungee', sans-serif;
-  font-size: 0.7rem;
-  letter-spacing: 0.06em;
-  padding: 0.2rem 0.75rem;
-  border-radius: 20px;
   margin-bottom: 0.75rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--raio-total);
+  background: var(--roxo-100);
+  color: var(--roxo-700);
+  font-size: 0.75rem;
+  font-weight: 700;
 }
 
 .torneio-nome {
-  font-family: 'Bungee', sans-serif;
-  color: #e8e0ff;
-  font-size: 1.25rem;
-  margin: 0 0 0.75rem;
-  letter-spacing: 0.03em;
+  margin-bottom: 0.6rem;
+  font-family: var(--fonte-marca);
+  font-weight: 400;
+  color: var(--roxo-950);
+  font-size: 1.3rem;
+  letter-spacing: 0.02em;
 }
 
 .torneio-info {
   display: flex;
-  gap: 1.5rem;
-  margin-bottom: 0.75rem;
-  font-size: 0.875rem;
-  color: #b990f5;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.5rem;
+  margin-bottom: 1rem;
+  color: var(--cor-texto-2);
+  font-size: 0.9rem;
 }
 
 .torneio-detalhes {
   display: flex;
-  align-items: center;
-  gap: 0.75rem;
   flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
 }
 
 .torneio-chip {
+  padding: 0.3rem 0.7rem;
+  border-radius: 8px;
+  background: var(--tinta-100);
+  color: var(--tinta-700);
   font-size: 0.82rem;
-  color: #c8bfe8;
-  background-color: #2a2560;
-  padding: 0.25rem 0.65rem;
-  border-radius: 6px;
+  font-weight: 600;
 }
 
 .torneio-status {
-  font-family: 'Bungee', sans-serif;
-  font-size: 0.72rem;
-  padding: 0.25rem 0.75rem;
-  border-radius: 6px;
-  letter-spacing: 0.05em;
+  padding: 0.3rem 0.75rem;
+  border-radius: var(--raio-total);
+  font-size: 0.78rem;
+  font-weight: 700;
 }
 
 .status-encerrado {
-  background-color: #4a2040;
-  color: #f08080;
+  background: var(--ambar-100);
+  color: var(--ambar-700);
 }
 
 .status-aberto {
-  background-color: #1e3d2a;
-  color: #80d090;
+  background: var(--verde-100);
+  color: var(--verde-800);
 }
 
 .status-andamento {
-  background-color: #3a2a10;
-  color: #f0c060;
+  background: var(--roxo-100);
+  color: var(--roxo-700);
 }
 
 .torneios-vazio {
+  padding: 3rem 1rem;
   text-align: center;
-  padding: 3rem;
-  color: #6b5fa0;
+  color: var(--cor-texto-3);
   font-size: 0.95rem;
   line-height: 1.8;
 }

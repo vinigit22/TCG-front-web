@@ -1,0 +1,102 @@
+<div class="pagina estreita">
+  <header class="pagina-cabecalho">
+    <div>
+      <h1>Notificações</h1>
+      <p>Avisos do sistema sobre seus torneios: prazos que acabaram, chaves geradas, resultados.</p>
+    </div>
+    <div class="pagina-acoes">
+      <button
+        type="button"
+        class="btn btn-secundario"
+        [disabled]="!naoLidas()"
+        (click)="marcarTodas()"
+      >
+        <app-icone nome="check" [tamanho]="15" />
+        Marcar todas como lidas
+      </button>
+    </div>
+  </header>
+
+  <div class="segmentado" role="group" aria-label="Filtro">
+    <button type="button" [class.ativa]="!soNaoLidas()" (click)="soNaoLidas.set(false)">
+      Todas <span class="contador">{{ notificacoes.dados()?.length ?? 0 }}</span>
+    </button>
+    <button type="button" [class.ativa]="soNaoLidas()" (click)="soNaoLidas.set(true)">
+      Não lidas <span class="contador">{{ naoLidas() }}</span>
+    </button>
+  </div>
+
+  <section class="cartao">
+    @if (notificacoes.erro()) {
+      <app-estado-vazio
+        [erro]="true"
+        titulo="Não foi possível carregar"
+        [texto]="notificacoes.erro()!"
+      />
+    } @else if (notificacoes.dados() === undefined) {
+      <div class="cartao-corpo"><div class="esqueleto" style="height: 160px"></div></div>
+    } @else if (visiveis().length === 0) {
+      <app-estado-vazio
+        icone="sino"
+        [titulo]="soNaoLidas() ? 'Nada pendente' : 'Nenhuma notificação'"
+        texto="Quando algo acontecer nos seus torneios, aparece aqui."
+      />
+    } @else {
+      <ul class="lista">
+        @for (notificacao of visiveis(); track notificacao.id) {
+          <li class="notificacao" [class.nao-lida]="!notificacao.lida">
+            <span class="tipo-icone"
+              ><app-icone [nome]="icone[notificacao.tipo]" [tamanho]="17"
+            /></span>
+            <div class="conteudo">
+              <div class="linha-titulo">
+                <strong>{{ notificacao.titulo }}</strong>
+                <span class="quando">{{ tempoRelativo(notificacao.criadoEm) }}</span>
+              </div>
+              <p>{{ notificacao.mensagem }}</p>
+              <div class="acoes-notificacao">
+                @if (notificacao.torneioId) {
+                  <a
+                    class="btn btn-secundario btn-sm"
+                    [routerLink]="['/painel/torneios', notificacao.torneioId]"
+                    (click)="marcarComoLida(notificacao)"
+                  >
+                    Abrir torneio
+                    <app-icone nome="seta-direita" [tamanho]="14" />
+                  </a>
+                }
+                @if (notificacao.eventoId) {
+                  <a
+                    class="btn btn-secundario btn-sm"
+                    [routerLink]="['/painel/eventos', notificacao.eventoId]"
+                    (click)="marcarComoLida(notificacao)"
+                  >
+                    Abrir evento
+                    <app-icone nome="seta-direita" [tamanho]="14" />
+                  </a>
+                }
+                @if (!notificacao.lida) {
+                  <button
+                    type="button"
+                    class="btn btn-fantasma btn-sm"
+                    (click)="marcarComoLida(notificacao)"
+                  >
+                    Marcar como lida
+                  </button>
+                }
+                <button
+                  type="button"
+                  class="btn btn-fantasma btn-sm excluir"
+                  (click)="excluir(notificacao)"
+                  aria-label="Excluir notificação"
+                >
+                  <app-icone nome="lixeira" [tamanho]="15" />
+                </button>
+              </div>
+            </div>
+          </li>
+        }
+      </ul>
+    }
+  </section>
+</div>

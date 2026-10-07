@@ -1,0 +1,22 @@
+.estreita {
+  max-width: 760px;
+}
+
+.sair {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.1rem 1.25rem;
+}
+
+.sair h2 {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.sair p {
+  font-size: 0.8125rem;
+  color: var(--cor-texto-3);
+}

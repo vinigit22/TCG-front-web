@@ -99,6 +99,29 @@ function consultar(caminho: string, params: URLSearchParams, contaId: number | n
       }
       break;
 
+    // Só admin na API; aqui basta estar logado
+    case 'contas': {
+      exigirLogin(contaId);
+      if (idNumero !== undefined)
+        return dados.contas.find((conta) => conta.id === idNumero) ?? erro404();
+      const tipo = params.get('tipo');
+      return tipo === null ? dados.contas : dados.contas.filter((conta) => conta.tipo === tipo);
+    }
+
+    case 'administradores': {
+      exigirLogin(contaId);
+      const administradores = dados.contas
+        .filter((conta) => conta.tipo === 'ADMIN')
+        .map((conta) => ({
+          contaId: conta.id,
+          nome: dados.nomesDasContas[conta.id].nome,
+          criadoEm: conta.criadoEm,
+        }));
+      if (idNumero !== undefined)
+        return administradores.find((admin) => admin.contaId === idNumero) ?? erro404();
+      return administradores;
+    }
+
     case 'jogos': {
       if (idNumero !== undefined)
         return dados.jogos.find((jogo) => jogo.id === idNumero) ?? erro404();

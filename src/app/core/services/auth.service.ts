@@ -34,6 +34,11 @@ export class AuthService {
     );
   }
 
+  // Dados da conta logada (email verificado, último login...)
+  contaLogada(): Observable<Conta> {
+    return this.http.get<Conta>(urlApi('/auth/me'));
+  }
+
   // Confere o token salvo (um 401 encerra a sessão pelo interceptor) e atualiza nome e foto da loja
   recarregarConta(): Observable<ContaSessao | null> {
     if (!this.sessao.autenticado()) return of(null);

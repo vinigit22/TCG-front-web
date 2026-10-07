@@ -1,0 +1,177 @@
+<div class="pagina">
+  <header class="pagina-cabecalho">
+    <div>
+      <p class="data-hoje">{{ hoje | date: "EEEE, d 'de' MMMM" }}</p>
+      <h1>Visão geral da plataforma</h1>
+      <p>Contas, lojas e torneios do TopDeck em um só lugar.</p>
+    </div>
+    <div class="pagina-acoes">
+      <a routerLink="/admin/avisos" class="btn btn-secundario">
+        <app-icone nome="megafone" [tamanho]="16" />
+        Enviar aviso
+      </a>
+      <a routerLink="/admin/lojas" [queryParams]="{ filtro: 'pendentes' }" class="btn btn-primario">
+        <app-icone nome="escudo-check" [tamanho]="16" />
+        Verificar lojas
+      </a>
+    </div>
+  </header>
+
+  <section
+    class="grade-kpi"
+    aria-label="Resumo"
+    [class.recarregando]="contas.carregando() && contas.dados()"
+  >
+    <div class="kpi">
+      <span class="kpi-rotulo"><app-icone nome="usuario" [tamanho]="16" /> Contas ativas</span>
+      <span class="kpi-valor"
+        >{{ indicadores().contasAtivas }} <small>/ {{ indicadores().contas }}</small></span
+      >
+      <span class="kpi-detalhe"
+        >{{ indicadores().contas - indicadores().contasAtivas }}
+        {{
+          indicadores().contas - indicadores().contasAtivas === 1 ? 'desativada' : 'desativadas'
+        }}</span
+      >
+    </div>
+    <div class="kpi">
+      <span class="kpi-rotulo"><app-icone nome="loja" [tamanho]="16" /> Lojas</span>
+      <span class="kpi-valor">{{ indicadores().lojas }}</span>
+      <span class="kpi-detalhe"
+        >{{ indicadores().verificadas }}
+        {{ indicadores().verificadas === 1 ? 'verificada' : 'verificadas' }}</span
+      >
+    </div>
+    <div class="kpi">
+      <span class="kpi-rotulo"><app-icone nome="usuarios" [tamanho]="16" /> Jogadores</span>
+      <span class="kpi-valor">{{ indicadores().jogadores }}</span>
+      <span class="kpi-detalhe">contas de jogador no app</span>
+    </div>
+    <div class="kpi">
+      <span class="kpi-rotulo"><app-icone nome="trofeu" [tamanho]="16" /> Torneios ativos</span>
+      <span class="kpi-valor">{{ indicadores().torneiosAtivos }}</span>
+      <span class="kpi-detalhe"
+        >{{ indicadores().finalizados }}
+        {{ indicadores().finalizados === 1 ? 'finalizado' : 'finalizados' }} ·
+        {{ indicadores().jogosAtivos }} jogos no catálogo</span
+      >
+    </div>
+  </section>
+
+  <div class="grade-metades">
+    <section class="cartao">
+      <header class="cartao-cabecalho">
+        <div>
+          <h2>Contas por tipo</h2>
+          <p>{{ indicadores().contas }} contas cadastradas</p>
+        </div>
+        <a routerLink="/admin/contas" class="btn btn-fantasma btn-sm">Ver contas</a>
+      </header>
+      <div class="cartao-corpo">
+        @if (contas.erro()) {
+          <app-estado-vazio
+            [erro]="true"
+            [compacto]="true"
+            titulo="Não foi possível carregar"
+            [texto]="contas.erro()!"
+          />
+        } @else if (contas.dados() === undefined) {
+          <div class="esqueleto" style="height: 120px"></div>
+        } @else {
+          <app-barra-composicao titulo="Contas por tipo" [partes]="composicaoContas()" />
+        }
+      </div>
+    </section>
+
+    <section class="cartao">
+      <header class="cartao-cabecalho">
+        <div>
+          <h2>Torneios por fase</h2>
+          <p>Todos os torneios da plataforma</p>
+        </div>
+        <a routerLink="/admin/torneios" class="btn btn-fantasma btn-sm">Ver torneios</a>
+      </header>
+      <div class="cartao-corpo">
+        @if (torneios.dados() === undefined) {
+          <div class="esqueleto" style="height: 190px"></div>
+        } @else {
+          <app-grafico-barras
+            titulo="Torneios por fase"
+            [barras]="torneiosPorStatus()"
+            unidade="torneio"
+            unidadePlural="torneios"
+          />
+        }
+      </div>
+    </section>
+
+    <section class="cartao">
+      <header class="cartao-cabecalho">
+        <div>
+          <h2>Lojas aguardando verificação</h2>
+          <p>Confira nome, endereço e contato antes de dar o selo</p>
+        </div>
+      </header>
+      @if (lojas.dados() !== undefined && pendentes().length === 0) {
+        <app-estado-vazio
+          [compacto]="true"
+          icone="escudo-check"
+          titulo="Nenhuma loja pendente"
+          texto="Todas as lojas já foram verificadas."
+        />
+      } @else {
+        <ul class="lista">
+          @for (loja of pendentes(); track loja.contaId) {
+            <li class="lista-item">
+              <span class="avatar avatar-sm">{{ iniciais(loja.nome) }}</span>
+              <span class="principal-item">
+                <strong class="truncar">{{ loja.nome }}</strong>
+                <span class="secundario truncar">{{
+                  loja.endereco ? enderecoEmTexto(loja.endereco) : 'Sem endereço cadastrado'
+                }}</span>
+              </span>
+              <button
+                type="button"
+                class="btn btn-secundario btn-sm"
+                [attr.aria-busy]="verificando() === loja.contaId"
+                (click)="verificar(loja)"
+              >
+                <app-icone nome="verificado" [tamanho]="15" />
+                Verificar
+              </button>
+            </li>
+          }
+        </ul>
+      }
+    </section>
+
+    <section class="cartao">
+      <header class="cartao-cabecalho">
+        <div>
+          <h2>Contas recentes</h2>
+          <p>Últimos cadastros na plataforma</p>
+        </div>
+      </header>
+      <ul class="lista">
+        @for (conta of recentes(); track conta.id) {
+          <li class="lista-item">
+            <span
+              class="avatar avatar-sm"
+              [class.verde]="conta.tipo === 'JOGADOR'"
+              [class.ambar]="conta.tipo === 'ADMIN'"
+            >
+              {{ iniciais(conta.email) }}
+            </span>
+            <span class="principal-item">
+              <strong class="truncar">{{ conta.email }}</strong>
+              <span class="secundario">criada {{ tempoRelativo(conta.criadoEm) }}</span>
+            </span>
+            <span class="selo" [class]="'selo-' + tomTipo[conta.tipo]">{{
+              rotuloTipo[conta.tipo]
+            }}</span>
+          </li>
+        }
+      </ul>
+    </section>
+  </div>
+</div>

@@ -1,0 +1,60 @@
+.abas-cartao {
+  padding: 0 0.75rem;
+}
+
+.barra {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+.filtro-jogo {
+  width: auto;
+  min-width: 190px;
+}
+
+.carregando {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 1.25rem;
+}
+
+.linha-clicavel {
+  cursor: pointer;
+}
+
+.titulo-torneio {
+  display: block;
+  font-weight: 600;
+  color: var(--cor-texto);
+}
+
+.titulo-torneio:hover {
+  color: var(--roxo-600);
+}
+
+.jogo,
+.data span {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--cor-texto-3);
+}
+
+.data {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.data span::first-letter {
+  text-transform: uppercase;
+}
+
+.gratis {
+  font-weight: 600;
+  color: var(--verde-700);
+}
+
+app-medidor {
+  display: block;
+  width: 150px;
+}

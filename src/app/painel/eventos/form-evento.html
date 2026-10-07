@@ -1,0 +1,150 @@
+<div class="pagina formulario">
+  <header>
+    <a class="voltar" [routerLink]="id ? ['/painel/eventos', id] : '/painel/eventos'">
+      <app-icone nome="seta-esquerda" [tamanho]="15" />
+      {{ id ? 'Voltar ao evento' : 'Eventos' }}
+    </a>
+    <div class="pagina-cabecalho">
+      <div>
+        <h1>{{ id ? 'Editar evento' : 'Novo evento' }}</h1>
+        <p>Publicado, o evento aparece no app e os jogadores podem confirmar presença.</p>
+      </div>
+    </div>
+  </header>
+
+  <form class="cartao" [formGroup]="form" (ngSubmit)="salvar()" novalidate>
+    <section class="secao-form">
+      <header>
+        <h2>Sobre o evento</h2>
+        <p>Que tipo de encontro é e o que vai rolar.</p>
+      </header>
+      <div class="form-grade">
+        <fieldset class="campo inteiro">
+          <legend class="campo-rotulo">Tipo</legend>
+          <div class="tipos">
+            @for (tipo of tipos; track tipo) {
+              <label class="opcao">
+                <input type="radio" formControlName="tipo" [value]="tipo" />
+                <span
+                  ><app-icone [nome]="iconeTipo[tipo]" [tamanho]="16" />
+                  {{ rotuloTipo[tipo] }}</span
+                >
+              </label>
+            }
+          </div>
+        </fieldset>
+        <label class="campo inteiro">
+          <span class="campo-rotulo">Nome do evento</span>
+          <input
+            class="controle"
+            formControlName="titulo"
+            placeholder="Ex.: Dia da Troca"
+            maxlength="180"
+          />
+          @if (erro('titulo', 'O nome'); as mensagem) {
+            <span class="campo-erro">{{ mensagem }}</span>
+          }
+        </label>
+        <label class="campo inteiro">
+          <span class="campo-rotulo">Descrição <span class="opcional">(opcional)</span></span>
+          <textarea
+            class="controle"
+            formControlName="descricao"
+            rows="4"
+            placeholder="O que levar, como funciona, se tem lanche..."
+          ></textarea>
+        </label>
+        <label class="campo inteiro">
+          <span class="campo-rotulo">Imagem <span class="opcional">(URL, opcional)</span></span>
+          <input class="controle" type="url" formControlName="imagem" placeholder="https://..." />
+        </label>
+      </div>
+    </section>
+
+    <section class="secao-form">
+      <header>
+        <h2>Quando e onde</h2>
+        <p>O horário de fim é opcional.</p>
+      </header>
+      <div class="form-grade">
+        <label class="campo">
+          <span class="campo-rotulo">Início</span>
+          <input class="controle" type="datetime-local" formControlName="dataInicio" />
+          @if (erro('dataInicio', 'O início'); as mensagem) {
+            <span class="campo-erro">{{ mensagem }}</span>
+          }
+        </label>
+        <label class="campo">
+          <span class="campo-rotulo">Fim <span class="opcional">(opcional)</span></span>
+          <input class="controle" type="datetime-local" formControlName="dataFim" />
+          @if (form.hasError('fimAntesDoInicio')) {
+            <span class="campo-erro">O fim não pode ser antes do início.</span>
+          }
+        </label>
+        <fieldset class="campo inteiro">
+          <legend class="campo-rotulo">Local</legend>
+          <div class="opcoes">
+            <label class="opcao">
+              <input type="radio" formControlName="local" value="loja" />
+              <span><app-icone nome="loja" [tamanho]="16" /> Na loja</span>
+            </label>
+            <label class="opcao">
+              <input type="radio" formControlName="local" value="outro" />
+              <span><app-icone nome="local" [tamanho]="16" /> Em outro endereço</span>
+            </label>
+          </div>
+          @if (local() === 'loja' && loja.dados()?.endereco; as enderecoLoja) {
+            <span class="campo-ajuda">{{ enderecoEmTexto(enderecoLoja) }}</span>
+          }
+        </fieldset>
+        @if (local() === 'outro') {
+          <div class="inteiro">
+            <app-campos-endereco [form]="endereco" />
+          </div>
+        }
+      </div>
+    </section>
+
+    <section class="secao-form">
+      <header>
+        <h2>Participação</h2>
+        <p>Deixe as vagas em branco para um evento sem limite.</p>
+      </header>
+      <div class="form-grade">
+        <label class="campo">
+          <span class="campo-rotulo">Vagas <span class="opcional">(opcional)</span></span>
+          <input
+            class="controle"
+            type="number"
+            min="1"
+            step="1"
+            formControlName="vagasMax"
+            placeholder="Sem limite"
+          />
+          @if (erro('vagasMax', 'As vagas'); as mensagem) {
+            <span class="campo-erro">{{ mensagem }}</span>
+          }
+        </label>
+        <label class="campo">
+          <span class="campo-rotulo">Situação</span>
+          <select class="controle" formControlName="status">
+            @for (status of statusPossiveis; track status) {
+              <option [value]="status">{{ rotuloStatus[status] }}</option>
+            }
+          </select>
+          <span class="campo-ajuda">Rascunho não aparece no app.</span>
+        </label>
+      </div>
+    </section>
+
+    <footer class="cartao-rodape">
+      <a class="btn btn-fantasma" [routerLink]="id ? ['/painel/eventos', id] : '/painel/eventos'"
+        >Cancelar</a
+      >
+      <button type="submit" class="btn btn-primario" [attr.aria-busy]="salvando()">
+        <app-icone nome="check" [tamanho]="16" />
+        {{ id ? 'Salvar alterações' : 'Criar evento' }}
+      </button>
+    </footer>
+  </form>
+</div>

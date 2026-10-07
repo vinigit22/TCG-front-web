@@ -1,0 +1,98 @@
+.voltar {
+  margin-bottom: -0.75rem;
+}
+
+.cabecalho-evento {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 1.25rem;
+  padding: 1.5rem;
+}
+
+.data-bloco.grande {
+  width: 64px;
+  height: 70px;
+  background: linear-gradient(160deg, var(--roxo-500), var(--roxo-700));
+  color: #fff;
+  box-shadow: 0 10px 22px -10px rgb(108 76 224 / 0.8);
+}
+
+.data-bloco.grande b {
+  font-size: 1.6rem;
+}
+
+.titulo-bloco {
+  flex: 1 1 380px;
+  min-width: 0;
+}
+
+.selos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.titulo-bloco h1 {
+  margin-top: 0.6rem;
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
+  margin: 0.75rem 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.875rem;
+  color: var(--cor-texto-2);
+}
+
+.meta li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.meta app-icone {
+  color: var(--roxo-500);
+}
+
+.primeira-maiuscula::first-letter {
+  text-transform: uppercase;
+}
+
+.descricao {
+  margin-top: 0.9rem;
+  color: var(--cor-texto-2);
+  white-space: pre-line;
+}
+
+.medidor-evento {
+  padding: 0.85rem 1.25rem 0;
+}
+
+.medidor-trilho {
+  height: 8px;
+  border-radius: var(--raio-total);
+  background: var(--verde-100);
+  overflow: hidden;
+}
+
+.medidor-preenchimento {
+  height: 100%;
+  max-width: 100%;
+  border-radius: inherit;
+  background: var(--verde-500);
+}
+
+.participantes {
+  margin-top: 0.75rem;
+}
+
+.cancelada {
+  opacity: 0.6;
+}

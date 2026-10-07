@@ -1,0 +1,164 @@
+<div class="pagina">
+  <header class="pagina-cabecalho">
+    <div>
+      <h1>Perfil da loja</h1>
+      <p>É assim que os jogadores encontram e reconhecem sua loja no app.</p>
+    </div>
+  </header>
+
+  @if (loja.dados(); as dadosLoja) {
+    @if (dadosLoja.verificada) {
+      <div class="faixa faixa-verde">
+        <app-icone nome="verificado" />
+        <p><strong>Loja verificada.</strong> O selo aparece ao lado do nome da loja no app.</p>
+      </div>
+    } @else {
+      <div class="faixa">
+        <app-icone nome="escudo" />
+        <p>
+          <strong>Verificação pendente.</strong> A equipe TopDeck confere os dados da loja (nome,
+          endereço, contato) e libera o selo de verificada.
+        </p>
+      </div>
+    }
+  }
+
+  <div class="layout">
+    <form
+      class="cartao"
+      [formGroup]="form"
+      (ngSubmit)="salvar()"
+      novalidate
+      [class.recarregando]="loja.dados() === undefined"
+    >
+      <section class="secao-form">
+        <header>
+          <h2>Identidade</h2>
+          <p>Nome, endereço da página e descrição.</p>
+        </header>
+        <div class="form-grade">
+          <label class="campo inteiro">
+            <span class="campo-rotulo">Nome da loja</span>
+            <input class="controle" formControlName="nome" maxlength="150" />
+            @if (erro('nome', 'O nome'); as mensagem) {
+              <span class="campo-erro">{{ mensagem }}</span>
+            }
+          </label>
+          <label class="campo inteiro">
+            <span class="campo-rotulo"
+              >Endereço da página <span class="opcional">(slug)</span></span
+            >
+            <input class="controle" formControlName="slug" placeholder="gerado a partir do nome" />
+            @if (erro('slug', 'O slug'); as mensagem) {
+              <span class="campo-erro">{{ mensagem }}</span>
+            } @else {
+              <span class="campo-ajuda"
+                >Identificador no link da loja: <b>{{ slugPrevia() }}</b></span
+              >
+            }
+          </label>
+          <label class="campo inteiro">
+            <span class="campo-rotulo">Descrição <span class="opcional">(opcional)</span></span>
+            <textarea
+              class="controle"
+              formControlName="descricao"
+              rows="3"
+              placeholder="Jogos que vocês têm, estrutura de mesas, horário..."
+            ></textarea>
+          </label>
+          <label class="campo">
+            <span class="campo-rotulo">Telefone <span class="opcional">(opcional)</span></span>
+            <input
+              class="controle"
+              type="tel"
+              formControlName="telefone"
+              placeholder="(11) 99999-9999"
+              maxlength="20"
+            />
+          </label>
+        </div>
+      </section>
+
+      <section class="secao-form">
+        <header>
+          <h2>Imagens</h2>
+          <p>Endereços (URL) das imagens. O envio de arquivo para lojas ainda não existe na API.</p>
+        </header>
+        <div class="form-grade">
+          <label class="campo inteiro">
+            <span class="campo-rotulo">Logo <span class="opcional">(URL, opcional)</span></span>
+            <input
+              class="controle"
+              type="url"
+              formControlName="imagemPerfil"
+              placeholder="https://..."
+            />
+          </label>
+          <label class="campo inteiro">
+            <span class="campo-rotulo">Banner <span class="opcional">(URL, opcional)</span></span>
+            <input
+              class="controle"
+              type="url"
+              formControlName="imagemBanner"
+              placeholder="https://..."
+            />
+          </label>
+        </div>
+      </section>
+
+      <section class="secao-form">
+        <header>
+          <h2>Endereço</h2>
+          <p>Torneios e eventos "na loja" usam este endereço.</p>
+        </header>
+        <div class="form-grade">
+          <label class="interruptor inteiro">
+            <input type="checkbox" formControlName="temEndereco" />
+            A loja tem endereço físico
+          </label>
+          @if (valores().temEndereco) {
+            <div class="inteiro">
+              <app-campos-endereco [form]="endereco" />
+            </div>
+          }
+        </div>
+      </section>
+
+      <footer class="cartao-rodape">
+        <button type="submit" class="btn btn-primario" [attr.aria-busy]="salvando()">
+          <app-icone nome="check" [tamanho]="16" />
+          Salvar perfil
+        </button>
+      </footer>
+    </form>
+
+    <aside class="previa" aria-label="Prévia no app">
+      <p class="previa-rotulo"><app-icone nome="olho" [tamanho]="15" /> Como aparece no app</p>
+      <article class="cartao-loja">
+        <div
+          class="banner"
+          [style.background-image]="previa().banner ? 'url(' + previa().banner + ')' : null"
+        ></div>
+        <div class="corpo">
+          <span class="logo">
+            @if (previa().perfil; as src) {
+              <img [src]="src" alt="" />
+            } @else {
+              {{ iniciais(previa().nome) }}
+            }
+          </span>
+          <h3>
+            {{ previa().nome }}
+            @if (loja.dados()?.verificada) {
+              <app-icone nome="verificado" [tamanho]="17" class="verificado" />
+            }
+          </h3>
+          @if (previa().cidade) {
+            <p class="cidade"><app-icone nome="local" [tamanho]="13" /> {{ previa().cidade }}</p>
+          }
+          <p class="descricao">{{ previa().descricao || 'A descrição da loja aparece aqui.' }}</p>
+        </div>
+      </article>
+    </aside>
+  </div>
+</div>

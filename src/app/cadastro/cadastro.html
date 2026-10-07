@@ -1,24 +1,73 @@
 <section class="cadastro-page">
   <div class="cadastro-container">
     <h1 class="cadastro-titulo">CADASTRO DE LOJA</h1>
-    <form class="cadastro-form">
+    <p class="cadastro-sub">Crie a conta da sua loja e comece a organizar torneios hoje.</p>
+
+    <form class="cadastro-form" [formGroup]="form" (ngSubmit)="cadastrar()" novalidate>
       <label for="nome">Nome da Loja</label>
-      <input type="text" id="nome" placeholder="Ex: Card House">
+      <input
+        type="text"
+        id="nome"
+        formControlName="nome"
+        placeholder="Ex: Card House"
+        maxlength="150"
+      />
+      @if (erroCampo('nome', 'O nome da loja'); as mensagem) {
+        <span class="campo-erro">{{ mensagem }}</span>
+      }
 
       <label for="email">Email</label>
-      <input type="email" id="email" placeholder="contato@loja.com">
+      <input
+        type="email"
+        id="email"
+        formControlName="email"
+        placeholder="contato@loja.com"
+        autocomplete="email"
+      />
+      @if (erroCampo('email', 'O email'); as mensagem) {
+        <span class="campo-erro">{{ mensagem }}</span>
+      }
 
       <label for="senha">Senha</label>
-      <input type="password" id="senha" placeholder="••••••••">
+      <input
+        type="password"
+        id="senha"
+        formControlName="senha"
+        placeholder="Pelo menos 6 caracteres"
+        autocomplete="new-password"
+      />
+      @if (erroCampo('senha', 'A senha'); as mensagem) {
+        <span class="campo-erro">{{ mensagem }}</span>
+      }
 
-      <label for="telefone">Telefone</label>
-      <input type="tel" id="telefone" placeholder="(11) 99999-9999">
+      <label for="telefone">Telefone <span class="opcional">(opcional)</span></label>
+      <input
+        type="tel"
+        id="telefone"
+        formControlName="telefone"
+        placeholder="(11) 99999-9999"
+        maxlength="20"
+      />
 
-      <label for="descricao">Descrição</label>
-      <textarea id="descricao" rows="3" placeholder="Conte sobre sua loja..."></textarea>
+      <label for="descricao">Descrição <span class="opcional">(opcional)</span></label>
+      <textarea
+        id="descricao"
+        formControlName="descricao"
+        rows="3"
+        placeholder="Conte sobre sua loja..."
+      ></textarea>
 
-      <button type="submit" class="btn-cadastrar">CADASTRAR</button>
+      @if (erro()) {
+        <p class="cadastro-erro" role="alert">{{ erro() }}</p>
+      }
+      @if (modoMock) {
+        <p class="cadastro-demo">Modo demonstração: criar a conta precisa da API ligada.</p>
+      }
+
+      <button type="submit" class="btn-cadastrar" [disabled]="enviando()">
+        {{ enviando() ? 'CADASTRANDO…' : 'CADASTRAR' }}
+      </button>
     </form>
-    <p class="cadastro-link">Já tem conta? <a href="/login">Entrar</a></p>
+    <p class="cadastro-link">Já tem conta? <a routerLink="/login">Entrar</a></p>
   </div>
 </section>

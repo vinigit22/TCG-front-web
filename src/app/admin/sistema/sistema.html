@@ -1,0 +1,137 @@
+<div class="pagina">
+  <header class="pagina-cabecalho">
+    <div>
+      <h1>Sistema</h1>
+      <p>Saúde da API e da conexão deste painel. Útil para descobrir rápido se algo saiu do ar.</p>
+    </div>
+    <div class="pagina-acoes">
+      <button
+        type="button"
+        class="btn btn-secundario"
+        [attr.aria-busy]="resumo().verificando"
+        (click)="verificarTudo()"
+      >
+        <app-icone nome="atualizar" [tamanho]="16" />
+        Verificar de novo
+      </button>
+    </div>
+  </header>
+
+  <div class="topo">
+    <section class="cartao conexao">
+      <span class="conexao-icone" [class.mock]="modoMock"
+        ><app-icone [nome]="modoMock ? 'info' : 'servidor'" [tamanho]="20"
+      /></span>
+      <div>
+        <h2>{{ modoMock ? 'Modo demonstração' : 'Conectado à API' }}</h2>
+        @if (modoMock) {
+          <p>
+            As consultas usam os dados de exemplo do próprio painel. Para usar o TCGBackend, mude
+            <code>usarMockApi</code> para <code>false</code> em
+            <code>src/app/core/configuracao.ts</code>.
+          </p>
+        } @else {
+          <p>
+            Chamadas indo para <code>{{ apiUrl }}</code
+            >.
+          </p>
+        }
+      </div>
+    </section>
+
+    <section
+      class="cartao estado-geral"
+      [class.ruim]="resumo().erros"
+      [class.atencao]="!resumo().erros && resumo().lentos"
+    >
+      <span class="estado-numero"
+        >{{ resumo().ok }}<small>/{{ servicos.length }}</small></span
+      >
+      <p>
+        @if (resumo().verificando) {
+          Verificando os serviços…
+        } @else if (resumo().erros) {
+          {{ resumo().erros }} {{ resumo().erros === 1 ? 'serviço com erro' : 'serviços com erro' }}
+        } @else if (resumo().lentos) {
+          Tudo no ar, mas com lentidão
+        } @else {
+          Todos os serviços respondendo
+        }
+      </p>
+    </section>
+  </div>
+
+  <section class="cartao">
+    <header class="cartao-cabecalho">
+      <div>
+        <h2>Serviços da API</h2>
+        <p>Uma consulta leve em cada área; acima de 800 ms conta como lento.</p>
+      </div>
+    </header>
+    <ul class="lista servicos">
+      @for (servico of servicos; track servico.rota) {
+        @let checagem = checagens()[servico.rota];
+        <li class="lista-item">
+          <span class="servico-icone"><app-icone [nome]="servico.icone" [tamanho]="17" /></span>
+          <span class="principal-item">
+            <strong>{{ servico.nome }}</strong>
+            <span class="secundario"
+              >{{ servico.descricao }} · <code>GET {{ servico.rota }}</code></span
+            >
+          </span>
+          <span class="detalhe texto-3">{{ checagem?.detalhe }}</span>
+          <span class="ms numeros">{{
+            checagem?.ms !== null && checagem?.ms !== undefined
+              ? (checagem!.ms | number) + ' ms'
+              : ''
+          }}</span>
+          <span
+            class="selo"
+            [class.selo-verde]="checagem?.estado === 'ok'"
+            [class.selo-ambar]="checagem?.estado === 'lento'"
+            [class.selo-vermelho]="checagem?.estado === 'erro'"
+          >
+            @switch (checagem?.estado) {
+              @case ('ok') {
+                No ar
+              }
+              @case ('lento') {
+                Lento
+              }
+              @case ('erro') {
+                Com erro
+              }
+              @default {
+                Verificando
+              }
+            }
+          </span>
+        </li>
+      }
+    </ul>
+  </section>
+
+  @if (token(); as dadosToken) {
+    <section class="cartao">
+      <header class="cartao-cabecalho">
+        <h2>Sessão deste navegador</h2>
+      </header>
+      <div class="cartao-corpo">
+        <dl class="detalhes">
+          <div>
+            <dt>Conta</dt>
+            <dd>{{ dadosToken.conta?.email }}</dd>
+          </div>
+          <div>
+            <dt>Token</dt>
+            <dd>{{ dadosToken.tipo }}</dd>
+          </div>
+          <div>
+            <dt>Expira em</dt>
+            <dd>{{ dadosToken.expira ? (dadosToken.expira | date: 'dd/MM/yyyy HH:mm') : '—' }}</dd>
+          </div>
+        </dl>
+      </div>
+    </section>
+  }
+</div>

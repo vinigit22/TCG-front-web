@@ -1,0 +1,161 @@
+<div class="pagina">
+  <header class="pagina-cabecalho">
+    <div>
+      <h1>Contas</h1>
+      <p>
+        Todas as contas da plataforma. Uma conta desativada não consegue entrar no app nem no
+        painel.
+      </p>
+    </div>
+  </header>
+
+  <section class="cartao">
+    <nav class="abas abas-cartao" aria-label="Tipo de conta">
+      @for (item of tipos; track item.id) {
+        <button type="button" [class.ativa]="tipo() === item.id" (click)="tipo.set(item.id)">
+          {{ item.rotulo }}
+          <span class="contador">{{ contagem()[item.id] }}</span>
+        </button>
+      }
+    </nav>
+
+    <div class="ferramentas barra">
+      <div class="controle-grupo busca">
+        <span class="controle-prefixo"><app-icone nome="busca" [tamanho]="16" /></span>
+        <input
+          class="controle"
+          type="search"
+          placeholder="Nome, nickname ou email"
+          aria-label="Buscar conta"
+          [value]="busca()"
+          (input)="busca.set($any($event.target).value)"
+        />
+      </div>
+      <select
+        class="controle situacao"
+        aria-label="Situação"
+        [value]="situacao()"
+        (change)="situacao.set($any($event.target).value)"
+      >
+        <option value="todas">Ativas e desativadas</option>
+        <option value="ativas">Só ativas</option>
+        <option value="inativas">Só desativadas</option>
+      </select>
+      <span class="espaco"></span>
+      <span class="total"
+        >{{ visiveis().length }} {{ visiveis().length === 1 ? 'conta' : 'contas' }}</span
+      >
+    </div>
+
+    @if (contas.erro()) {
+      <app-estado-vazio
+        [erro]="true"
+        titulo="Não foi possível carregar as contas"
+        [texto]="contas.erro()!"
+      >
+        <button type="button" class="btn btn-secundario btn-sm" (click)="contas.recarregar()">
+          Tentar de novo
+        </button>
+      </app-estado-vazio>
+    } @else if (contas.dados() === undefined) {
+      <div class="cartao-corpo"><div class="esqueleto" style="height: 220px"></div></div>
+    } @else if (visiveis().length === 0) {
+      <app-estado-vazio icone="filtro" titulo="Nenhuma conta com esses filtros" />
+    } @else {
+      <div class="tabela-envoltorio">
+        <table class="tabela">
+          <thead>
+            <tr>
+              <th>Conta</th>
+              <th>Tipo</th>
+              <th>Ativa</th>
+              <th>Email verificado</th>
+              <th>Último acesso</th>
+              <th>Criada em</th>
+              <th><span class="sr-only">Ações</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (linha of visiveis(); track linha.conta.id) {
+              <tr
+                [class.recarregando]="ocupada() === linha.conta.id"
+                [class.inativa]="!linha.conta.ativo"
+              >
+                <td>
+                  <div class="pessoa">
+                    <span
+                      class="avatar avatar-sm"
+                      [class.verde]="linha.conta.tipo === 'JOGADOR'"
+                      [class.ambar]="linha.conta.tipo === 'ADMIN'"
+                    >
+                      {{ iniciais(linha.nome) }}
+                    </span>
+                    <div>
+                      <strong>
+                        {{ linha.nome }}
+                        @if (linha.propria) {
+                          <span class="voce">você</span>
+                        }
+                      </strong>
+                      <span>{{ linha.detalhe }}</span>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <span class="selo" [class]="'selo-' + tomTipo[linha.conta.tipo]">{{
+                    rotuloTipo[linha.conta.tipo]
+                  }}</span>
+                </td>
+                <td>
+                  <label
+                    class="interruptor"
+                    [title]="linha.propria ? 'Você não pode desativar a própria conta' : ''"
+                  >
+                    <input
+                      type="checkbox"
+                      [checked]="linha.conta.ativo"
+                      [disabled]="linha.propria"
+                      (change)="alternarAtivo(linha, $any($event.target))"
+                    />
+                    <span class="sr-only">Conta ativa</span>
+                  </label>
+                </td>
+                <td>
+                  @if (linha.conta.emailVerificado) {
+                    <span class="verificado"
+                      ><app-icone nome="verificado" [tamanho]="16" /> Sim</span
+                    >
+                  } @else {
+                    <span class="texto-3">Não</span>
+                  }
+                </td>
+                <td class="texto-2">
+                  {{
+                    linha.conta.ultimoLogin
+                      ? tempoRelativo(linha.conta.ultimoLogin)
+                      : 'Nunca entrou'
+                  }}
+                </td>
+                <td class="texto-2 numeros-esq">{{ linha.conta.criadoEm | date: 'dd/MM/yyyy' }}</td>
+                <td class="acoes">
+                  @if (!linha.propria) {
+                    <app-menu-acoes [pequeno]="true">
+                      <button type="button" role="menuitem" (click)="alternarAtivo(linha)">
+                        <app-icone [nome]="linha.conta.ativo ? 'pausa' : 'jogar'" [tamanho]="16" />
+                        {{ linha.conta.ativo ? 'Desativar conta' : 'Reativar conta' }}
+                      </button>
+                      <button type="button" role="menuitem" class="perigo" (click)="excluir(linha)">
+                        <app-icone nome="lixeira" [tamanho]="16" />
+                        Excluir conta
+                      </button>
+                    </app-menu-acoes>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+</div>

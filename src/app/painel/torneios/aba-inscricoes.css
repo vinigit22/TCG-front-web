@@ -1,0 +1,78 @@
+.aviso-chave {
+  margin: 1rem 1.25rem 0;
+}
+
+.barra {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+.busca {
+  max-width: 240px;
+}
+
+.carregando {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 1.25rem;
+}
+
+.data {
+  white-space: nowrap;
+  font-size: 0.8125rem;
+  color: var(--cor-texto-2);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Pagamento: select com cara de selo */
+.pagamento {
+  appearance: none;
+  height: 28px;
+  padding: 0 1.7rem 0 0.7rem;
+  border: 1px solid transparent;
+  border-radius: var(--raio-total);
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  background-repeat: no-repeat;
+  background-position: right 0.45rem center;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  transition: box-shadow var(--transicao);
+}
+
+.pagamento:hover:not(:disabled) {
+  border-color: currentColor;
+}
+
+.pagamento:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.tom-verde {
+  background-color: var(--verde-100);
+  color: var(--verde-800);
+}
+
+.tom-ambar {
+  background-color: var(--ambar-100);
+  color: var(--ambar-700);
+}
+
+.tom-azul {
+  background-color: var(--azul-100);
+  color: var(--azul-700);
+}
+
+.tom-neutro {
+  background-color: var(--tinta-100);
+  color: var(--tinta-700);
+}
+
+.acoes-linha {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.35rem;
+}

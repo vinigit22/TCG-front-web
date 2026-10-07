@@ -1,0 +1,296 @@
+<div class="pagina">
+  <a class="voltar" routerLink="/painel/torneios">
+    <app-icone nome="seta-esquerda" [tamanho]="15" />
+    Torneios
+  </a>
+
+  @if (torneio.erro() && !torneio.dados()) {
+    <section class="cartao">
+      <app-estado-vazio
+        [erro]="true"
+        titulo="Não foi possível abrir o torneio"
+        [texto]="torneio.erro()!"
+      >
+        <button type="button" class="btn btn-secundario btn-sm" (click)="torneio.recarregar()">
+          Tentar de novo
+        </button>
+      </app-estado-vazio>
+    </section>
+  } @else if (!torneio.dados()) {
+    <div class="esqueleto" style="height: 210px; border-radius: 16px"></div>
+    <div class="grade-kpi">
+      @for (item of [1, 2, 3, 4]; track item) {
+        <div class="esqueleto" style="height: 104px; border-radius: 16px"></div>
+      }
+    </div>
+  } @else {
+    @let t = torneio.dados()!;
+    <header class="cartao cabecalho-torneio" [class.recarregando]="torneio.carregando()">
+      <div class="topo-torneio">
+        <div class="titulo-bloco">
+          <div class="selos">
+            <app-selo-torneio [status]="t.status" />
+            <span class="selo selo-roxo sem-ponto">{{ t.jogo.nome }}</span>
+            @if (t.formato) {
+              <span class="selo sem-ponto">{{ t.formato.nome }}</span>
+            }
+          </div>
+          <h1>{{ t.titulo }}</h1>
+          <ul class="meta">
+            <li>
+              <app-icone nome="calendario" [tamanho]="15" />
+              <span class="primeira-maiuscula">{{
+                t.dataInicio | date: "EEEE, d 'de' MMMM 'às' HH:mm"
+              }}</span>
+            </li>
+            <li>
+              <app-icone nome="local" [tamanho]="15" />
+              @if (t.endereco) {
+                {{ enderecoEmTexto(t.endereco) }}
+              } @else {
+                Na loja{{
+                  loja.dados()?.endereco ? ' · ' + enderecoEmTexto(loja.dados()!.endereco) : ''
+                }}
+              }
+            </li>
+            <li>
+              <app-icone nome="dinheiro" [tamanho]="15" />
+              {{ t.taxaInscricao > 0 ? (t.taxaInscricao | currency) : 'Inscrição grátis' }}
+            </li>
+            @if (t.inscricoesAte) {
+              <li>
+                <app-icone nome="relogio" [tamanho]="15" />
+                Inscrições até {{ t.inscricoesAte | date: "dd/MM 'às' HH:mm" }}
+              </li>
+            }
+          </ul>
+        </div>
+
+        <div class="pagina-acoes">
+          @if (t.status !== 'FINALIZADO' && t.status !== 'CANCELADO') {
+            <a class="btn btn-secundario" [routerLink]="['/painel/torneios', id, 'editar']">
+              <app-icone nome="editar" [tamanho]="15" />
+              Editar
+            </a>
+          }
+          @if (t.status === 'INSCRICOES_ENCERRADAS') {
+            <button type="button" class="btn btn-primario" (click)="abrirAba('chave')">
+              <app-icone nome="chave" [tamanho]="16" />
+              Gerar chave
+            </button>
+          }
+          @if (t.status === 'EM_ANDAMENTO') {
+            <button type="button" class="btn btn-primario" (click)="abrirAba('chave')">
+              <app-icone nome="chave" [tamanho]="16" />
+              Lançar resultados
+            </button>
+          }
+          @if (acaoPrincipal(); as acao) {
+            <button
+              type="button"
+              class="btn btn-primario"
+              [attr.aria-busy]="ocupado()"
+              (click)="alterarStatus(acao)"
+            >
+              <app-icone [nome]="acao.icone" [tamanho]="15" />
+              {{ acao.rotulo }}
+            </button>
+          }
+          @if (outrasAcoes().length || podeExcluir()) {
+            <app-menu-acoes>
+              @for (acao of outrasAcoes(); track acao.destino) {
+                <button
+                  type="button"
+                  role="menuitem"
+                  [class.perigo]="acao.perigo"
+                  (click)="alterarStatus(acao)"
+                >
+                  <app-icone [nome]="acao.icone" [tamanho]="16" />
+                  {{ acao.rotulo }}
+                </button>
+              }
+              @if (podeExcluir()) {
+                @if (outrasAcoes().length) {
+                  <hr />
+                }
+                <button type="button" role="menuitem" class="perigo" (click)="excluir()">
+                  <app-icone nome="lixeira" [tamanho]="16" />
+                  Excluir torneio
+                </button>
+              }
+            </app-menu-acoes>
+          }
+        </div>
+      </div>
+
+      @if (t.status === 'CANCELADO') {
+        <div class="faixa faixa-vermelha cancelado">
+          <app-icone nome="cancelar" />
+          <p>
+            <strong>Torneio cancelado.</strong> Os inscritos foram avisados no app. Ele não pode ser
+            reaberto.
+          </p>
+        </div>
+      } @else {
+        <ol class="etapas" aria-label="Fases do torneio">
+          @for (etapa of etapas; track etapa.status; let i = $index) {
+            <li
+              [class.feita]="i < etapaAtual()"
+              [class.atual]="i === etapaAtual()"
+              [attr.aria-current]="i === etapaAtual() ? 'step' : null"
+            >
+              <span class="bolinha">
+                @if (i < etapaAtual() || (i === etapaAtual() && t.status === 'FINALIZADO')) {
+                  <app-icone nome="check" [tamanho]="13" [traco]="3" />
+                } @else {
+                  {{ i + 1 }}
+                }
+              </span>
+              <span class="etapa-rotulo">{{ etapa.rotulo }}</span>
+            </li>
+          }
+        </ol>
+      }
+    </header>
+
+    <section class="grade-kpi" aria-label="Números do torneio">
+      <div class="kpi">
+        <span class="kpi-rotulo"><app-icone nome="usuarios" [tamanho]="16" /> Inscritos</span>
+        <span class="kpi-valor"
+          >{{ numeros().inscritos }} <small>/ {{ t.vagasMax }}</small></span
+        >
+        <div class="kpi-medidor" role="presentation">
+          <div [style.width.%]="(numeros().inscritos / t.vagasMax) * 100"></div>
+        </div>
+      </div>
+      <div class="kpi">
+        <span class="kpi-rotulo"
+          ><app-icone nome="usuario-check" [tamanho]="16" /> Check-in feito</span
+        >
+        <span class="kpi-valor">{{ numeros().confirmados }}</span>
+        <span class="kpi-detalhe">só quem fez check-in entra na chave</span>
+      </div>
+      <div class="kpi">
+        <span class="kpi-rotulo"><app-icone nome="relogio" [tamanho]="16" /> Lista de espera</span>
+        <span class="kpi-valor">{{ numeros().espera }}</span>
+        <span class="kpi-detalhe">sobem sozinhos quando abre uma vaga</span>
+      </div>
+      <div class="kpi">
+        <span class="kpi-rotulo"
+          ><app-icone nome="dinheiro" [tamanho]="16" /> Pagamentos pendentes</span
+        >
+        <span class="kpi-valor">{{ numeros().pendentes }}</span>
+        <span class="kpi-detalhe">
+          {{
+            t.taxaInscricao > 0
+              ? 'a receber: ' + (numeros().pendentes * t.taxaInscricao | currency)
+              : 'torneio gratuito'
+          }}
+        </span>
+      </div>
+    </section>
+
+    <section class="cartao">
+      <nav class="abas abas-cartao" aria-label="Seções do torneio">
+        <button
+          type="button"
+          [class.ativa]="aba() === 'inscricoes'"
+          (click)="abrirAba('inscricoes')"
+        >
+          <app-icone nome="usuarios" [tamanho]="16" />
+          Inscrições
+          <span class="contador">{{ inscricoes.dados()?.length ?? 0 }}</span>
+        </button>
+        <button type="button" [class.ativa]="aba() === 'chave'" (click)="abrirAba('chave')">
+          <app-icone nome="chave" [tamanho]="16" />
+          Chave
+        </button>
+        <button
+          type="button"
+          [class.ativa]="aba() === 'resultados'"
+          (click)="abrirAba('resultados')"
+        >
+          <app-icone nome="trofeu" [tamanho]="16" />
+          Resultados
+        </button>
+        <button type="button" [class.ativa]="aba() === 'detalhes'" (click)="abrirAba('detalhes')">
+          <app-icone nome="info" [tamanho]="16" />
+          Detalhes
+        </button>
+      </nav>
+
+      @switch (aba()) {
+        @case ('chave') {
+          <app-aba-chave
+            [torneio]="t"
+            [linhas]="chave.dados() ?? []"
+            [carregando]="chave.dados() === undefined"
+            [confirmados]="numeros().confirmados"
+            (alterou)="atualizarTudo()"
+          />
+        }
+        @case ('resultados') {
+          <app-aba-resultados
+            [torneio]="t"
+            [resultados]="resultados.dados() ?? []"
+            [carregando]="resultados.dados() === undefined"
+            (alterou)="resultados.recarregar()"
+          />
+        }
+        @case ('detalhes') {
+          <div class="cartao-corpo detalhes-torneio">
+            <dl class="detalhes">
+              <div>
+                <dt>Jogo</dt>
+                <dd>{{ t.jogo.nome }}</dd>
+              </div>
+              <div>
+                <dt>Formato</dt>
+                <dd>{{ t.formato?.nome ?? 'Livre' }}</dd>
+              </div>
+              <div>
+                <dt>Vagas</dt>
+                <dd>{{ t.vagasMax }} jogadores</dd>
+              </div>
+              <div>
+                <dt>Rodadas</dt>
+                <dd>{{ t.totalRodadas ?? 'Definidas ao gerar a chave' }}</dd>
+              </div>
+              <div>
+                <dt>Criado em</dt>
+                <dd>{{ t.criadoEm | date: 'dd/MM/yyyy HH:mm' }}</dd>
+              </div>
+              <div>
+                <dt>Atualizado em</dt>
+                <dd>{{ t.atualizadoEm | date: 'dd/MM/yyyy HH:mm' }}</dd>
+              </div>
+              @if (t.finalizadoEm) {
+                <div>
+                  <dt>Finalizado em</dt>
+                  <dd>{{ t.finalizadoEm | date: 'dd/MM/yyyy HH:mm' }}</dd>
+                </div>
+              }
+            </dl>
+            <div class="texto-bloco">
+              <h3>Descrição</h3>
+              <p>{{ t.descricao || 'Sem descrição.' }}</p>
+            </div>
+            <div class="texto-bloco">
+              <h3>Premiação</h3>
+              <p>{{ t.premiacao || 'Sem premiação informada.' }}</p>
+            </div>
+          </div>
+        }
+        @default {
+          <app-aba-inscricoes
+            [torneio]="t"
+            [inscricoes]="inscricoes.dados() ?? []"
+            [carregando]="inscricoes.dados() === undefined"
+            [erro]="inscricoes.erro()"
+            (alterou)="atualizarTudo()"
+          />
+        }
+      }
+    </section>
+  }
+</div>

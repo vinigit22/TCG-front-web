@@ -1,0 +1,163 @@
+<div class="pagina">
+  <header class="pagina-cabecalho">
+    <div>
+      <h1>Planos e assinaturas</h1>
+      <p>Quanto cada loja paga e quem está em dia.</p>
+    </div>
+  </header>
+
+  <div class="faixa faixa-ambar">
+    <app-icone nome="alerta" />
+    <p>
+      <strong>Prévia sem backend.</strong> O TCGBackend ainda não tem planos nem assinaturas. As
+      lojas abaixo são reais, mas o plano, a situação e os valores são
+      <strong>exemplos</strong> para desenhar a tela. O modelo sugerido para a API está no fim da
+      página.
+    </p>
+  </div>
+
+  <section class="grade-kpi" aria-label="Resumo (exemplo)">
+    <div class="kpi">
+      <span class="kpi-rotulo"><app-icone nome="dinheiro" [tamanho]="16" /> Receita mensal</span>
+      <span class="kpi-valor">{{ resumo().receitaMensal | currency }}</span>
+      <span class="kpi-detalhe"
+        >exemplo · {{ resumo().pagantes }}
+        {{ resumo().pagantes === 1 ? 'loja pagante' : 'lojas pagantes' }}</span
+      >
+    </div>
+    <div class="kpi">
+      <span class="kpi-rotulo"
+        ><app-icone nome="relogio" [tamanho]="16" /> Em período de teste</span
+      >
+      <span class="kpi-valor">{{ resumo().emTeste }}</span>
+      <span class="kpi-detalhe">exemplo</span>
+    </div>
+    <div class="kpi">
+      <span class="kpi-rotulo"
+        ><app-icone nome="alerta" [tamanho]="16" /> Pagamentos atrasados</span
+      >
+      <span class="kpi-valor">{{ resumo().atrasadas }}</span>
+      <span class="kpi-detalhe">exemplo</span>
+    </div>
+  </section>
+
+  <div class="planos">
+    @for (plano of planos; track plano.id) {
+      <article class="cartao plano" [class.destaque]="!!plano.destaque">
+        <header>
+          <div>
+            <h2>{{ plano.nome }}</h2>
+            <p class="preco">
+              {{
+                plano.precoMensal
+                  ? (plano.precoMensal | currency: 'BRL' : 'symbol' : '1.0-0')
+                  : 'R$ 0'
+              }}<span>/mês</span>
+            </p>
+          </div>
+          @if (plano.destaque) {
+            <span class="selo selo-roxo sem-ponto">{{ plano.destaque }}</span>
+          }
+        </header>
+        <ul>
+          @for (recurso of plano.recursos; track recurso) {
+            <li><app-icone nome="check" [tamanho]="14" [traco]="2.6" /> {{ recurso }}</li>
+          }
+        </ul>
+        <footer>
+          <b>{{ resumo().porPlano[plano.id] }}</b>
+          {{ resumo().porPlano[plano.id] === 1 ? 'loja' : 'lojas' }} neste plano
+          <span class="texto-3">(exemplo)</span>
+        </footer>
+      </article>
+    }
+  </div>
+
+  <section class="cartao">
+    <header class="cartao-cabecalho">
+      <div>
+        <h2>Assinaturas por loja</h2>
+        <p>Lojas reais · plano e situação de exemplo</p>
+      </div>
+    </header>
+    @if (lojas.dados() === undefined) {
+      <div class="cartao-corpo"><div class="esqueleto" style="height: 140px"></div></div>
+    } @else if (assinaturas().length === 0) {
+      <app-estado-vazio [compacto]="true" icone="loja" titulo="Nenhuma loja cadastrada" />
+    } @else {
+      <div class="tabela-envoltorio">
+        <table class="tabela">
+          <thead>
+            <tr>
+              <th>Loja</th>
+              <th>Plano</th>
+              <th>Situação</th>
+              <th>Próxima cobrança</th>
+              <th class="numeros">Valor</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of assinaturas(); track item.loja.contaId) {
+              <tr>
+                <td>
+                  <div class="pessoa">
+                    <span class="avatar avatar-sm">{{ iniciais(item.loja.nome) }}</span>
+                    <div>
+                      <strong>{{ item.loja.nome }}</strong>
+                      <span>{{ item.loja.endereco?.cidade ?? 'sem cidade' }}</span>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <span class="selo sem-ponto" [class.selo-roxo]="item.plano.precoMensal > 0">{{
+                    item.plano.nome
+                  }}</span>
+                </td>
+                <td>
+                  <span class="selo" [class]="'selo-' + situacao[item.situacao].tom">{{
+                    situacao[item.situacao].rotulo
+                  }}</span>
+                </td>
+                <td class="texto-2">
+                  {{ item.proximaCobranca ? (item.proximaCobranca | date: 'dd/MM/yyyy') : '—' }}
+                </td>
+                <td class="numeros">{{ item.plano.precoMensal | currency }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+
+  <section class="cartao modelo">
+    <header class="cartao-cabecalho">
+      <div>
+        <h2>Modelo sugerido para o backend</h2>
+        <p>O mínimo para esta tela funcionar com dados reais</p>
+      </div>
+    </header>
+    <div class="cartao-corpo modelo-grade">
+      <div>
+        <h3>Tabelas</h3>
+        <pre><code>plano (id, nome, preco_mensal, max_torneios_ativos,
+       max_jogadores, ativo)
+
+assinatura (id, loja_id, plano_id, status,
+            inicio_em, proxima_cobranca, cancelada_em)
+  status: TESTE | ATIVA | ATRASADA | CANCELADA</code></pre>
+      </div>
+      <div>
+        <h3>Rotas</h3>
+        <pre><code>GET  /planos                 (público)
+GET  /assinaturas?lojaId=    (admin; loja vê a dela)
+PUT  /assinaturas/&#123;id&#125;       (admin: trocar plano/status)
+GET  /lojas/&#123;id&#125;/assinatura  (loja logada)</code></pre>
+        <p class="texto-3 nota">
+          Com isso, o limite do plano Gratuito (1 torneio ativo, 16 jogadores) pode ser checado no
+          TorneioService.
+        </p>
+      </div>
+    </div>
+  </section>
+</div>

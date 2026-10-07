@@ -1,13 +1,55 @@
-	<nav class="navbar">
-		<div class="navdiv">
-			<div class="logo"><img src="/imagens/logo1.png" alt="MERUEM.INC" /></div>
-			<ul>
-				<li><a routerLink="/jogos">JOGOS</a></li>
-				<li><a routerLink="/preco">PREÇO</a></li>
-				<li><a routerLink="/login">LOGIN</a></li>
-				<li><a routerLink="/quem-somos">QUEM SOMOS</a></li>
-				<li><button type="button" routerLink="/login">Entrar</button></li>
-				<li><button type="button" routerLink="/cadastro">Cadastro</button></li>
-			</ul>
-		</div>
-	</nav>
+<nav class="navbar" [class.aberto]="menuAberto()">
+  <div class="navdiv">
+    <a class="logo" routerLink="/home" (click)="menuAberto.set(false)">
+      <img src="/imagens/logo1.png" alt="MERUEM.INC: página inicial" width="145" height="53" />
+    </a>
+
+    <button
+      type="button"
+      class="menu-botao"
+      aria-controls="menu-site"
+      [attr.aria-expanded]="menuAberto()"
+      (click)="menuAberto.set(!menuAberto())"
+    >
+      <span class="sr-only">Menu</span>
+      <span class="hamburguer" aria-hidden="true"></span>
+    </button>
+
+    <ul id="menu-site">
+      <li>
+        <a routerLink="/jogos" routerLinkActive="ativo" (click)="menuAberto.set(false)">JOGOS</a>
+      </li>
+      <li>
+        <a routerLink="/torneios" routerLinkActive="ativo" (click)="menuAberto.set(false)"
+          >TORNEIOS</a
+        >
+      </li>
+      <li>
+        <a routerLink="/preco" routerLinkActive="ativo" (click)="menuAberto.set(false)">PREÇO</a>
+      </li>
+      <li>
+        <a routerLink="/quem-somos" routerLinkActive="ativo" (click)="menuAberto.set(false)"
+          >QUEM SOMOS</a
+        >
+      </li>
+      @if (areaLogada(); as area) {
+        <li class="botao">
+          <a class="btn-nav btn-cheio" [routerLink]="area" (click)="menuAberto.set(false)"
+            >Meu painel</a
+          >
+        </li>
+      } @else {
+        <li class="botao">
+          <a class="btn-nav btn-contorno" routerLink="/login" (click)="menuAberto.set(false)"
+            >Entrar</a
+          >
+        </li>
+        <li class="botao">
+          <a class="btn-nav btn-cheio" routerLink="/cadastro" (click)="menuAberto.set(false)"
+            >Cadastro</a
+          >
+        </li>
+      }
+    </ul>
+  </div>
+</nav>

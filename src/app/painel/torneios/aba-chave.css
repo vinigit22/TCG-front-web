@@ -1,0 +1,347 @@
+/* ---------------------------------------------------------------- Antes da chave */
+
+.preparar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 2.5rem 1.5rem 2.75rem;
+  text-align: center;
+}
+
+.preparar-texto {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  max-width: 520px;
+}
+
+.preparar-icone {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  margin-bottom: 0.25rem;
+  border-radius: 16px;
+  background: linear-gradient(135deg, var(--roxo-500), var(--roxo-700));
+  color: #fff;
+  box-shadow: 0 10px 24px -8px rgb(108 76 224 / 0.6);
+}
+
+.preparar h3 {
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
+.preparar p {
+  color: var(--cor-texto-2);
+  font-size: 0.9rem;
+}
+
+.requisitos {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  text-align: left;
+}
+
+.requisitos li {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--cor-texto-3);
+}
+
+.requisitos .marca {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--tinta-100);
+}
+
+.requisitos .ok {
+  color: var(--verde-800);
+}
+
+.requisitos .ok .marca {
+  background: var(--verde-400);
+  color: var(--verde-950);
+}
+
+/* ---------------------------------------------------------------- Com chave */
+
+.topo-chave {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.1rem 1.25rem 0.25rem;
+}
+
+.progresso {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.75rem;
+  font-size: 0.875rem;
+  color: var(--cor-texto-2);
+}
+
+.progresso strong {
+  color: var(--cor-texto);
+}
+
+.progresso-trilho {
+  width: 160px;
+  height: 6px;
+  border-radius: var(--raio-total);
+  background: var(--roxo-100);
+  overflow: hidden;
+}
+
+.progresso-trilho div {
+  height: 100%;
+  border-radius: inherit;
+  background: var(--roxo-500);
+  transition: width 400ms ease;
+}
+
+.dica {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8125rem;
+  color: var(--cor-texto-3);
+}
+
+.campeao {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 1rem 0.6rem 0.65rem;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #fff6e0, #ffe9b8);
+  border: 1px solid #f5d68f;
+}
+
+.campeao-icone {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background: var(--ambar-500);
+  color: #fff;
+}
+
+.campeao span {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ambar-700);
+}
+
+.campeao strong {
+  font-size: 1.05rem;
+  color: var(--tinta-900);
+}
+
+.area-chave {
+  padding: 0.75rem 1.25rem 1rem;
+}
+
+/* ---------------------------------------------------------------- Janela de resultado */
+
+.explica {
+  color: var(--cor-texto-2);
+  line-height: 1.6;
+}
+
+.placar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 0.5rem 0 1.25rem;
+}
+
+.placar-lado {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.placar-nome {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 700;
+}
+
+.passos {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.passos .btn {
+  font-size: 1.1rem;
+}
+
+.placar-valor {
+  min-width: 2.2rem;
+  font-size: 2rem;
+  font-weight: 800;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.placar-rotulo {
+  font-size: 0.72rem;
+  color: var(--cor-texto-3);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.x {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--tinta-400);
+}
+
+.resultados {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.resultados legend {
+  margin-bottom: 0.5rem;
+}
+
+.resultado-opcao {
+  position: relative;
+  display: block;
+}
+
+.resultado-opcao input {
+  position: absolute;
+  opacity: 0;
+}
+
+.resultado-opcao span {
+  display: block;
+  height: 100%;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--cor-borda-forte);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all var(--transicao);
+}
+
+.resultado-opcao strong {
+  display: block;
+  font-size: 0.8125rem;
+  overflow-wrap: anywhere;
+}
+
+.resultado-opcao small {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--cor-texto-3);
+}
+
+.resultado-opcao input:checked + span {
+  border-color: var(--roxo-500);
+  background: var(--roxo-50);
+  box-shadow: inset 0 0 0 1px var(--roxo-500);
+}
+
+.resultado-opcao input:focus-visible + span {
+  box-shadow: var(--anel-foco);
+}
+
+.desempate {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.lado-botao {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 1.1rem 0.75rem;
+  border: 1px solid var(--cor-borda-forte);
+  border-radius: 14px;
+  background: var(--cor-superficie);
+  transition: all var(--transicao);
+}
+
+.lado-botao:hover:not(:disabled) {
+  border-color: var(--verde-400);
+  background: var(--verde-50);
+}
+
+.lado-nome {
+  font-weight: 800;
+}
+
+.lado-ajuda {
+  font-size: 0.75rem;
+  color: var(--cor-texto-3);
+}
+
+.resumo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  border-radius: 14px;
+  background: var(--tinta-50);
+}
+
+.resumo-lado {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--cor-texto-3);
+  font-weight: 600;
+}
+
+.resumo-lado b {
+  font-size: 1.6rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.resumo-lado.ganhou {
+  color: var(--verde-800);
+}
+
+@media (max-width: 520px) {
+  .resultados {
+    grid-template-columns: 1fr;
+  }
+}

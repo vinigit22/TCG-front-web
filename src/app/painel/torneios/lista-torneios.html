@@ -1,0 +1,160 @@
+<div class="pagina">
+  <header class="pagina-cabecalho">
+    <div>
+      <h1>Torneios</h1>
+      <p>Crie torneios, acompanhe as inscrições e conduza a chave até a final.</p>
+    </div>
+    <div class="pagina-acoes">
+      <a routerLink="/painel/torneios/novo" class="btn btn-primario">
+        <app-icone nome="mais" [tamanho]="16" />
+        Novo torneio
+      </a>
+    </div>
+  </header>
+
+  <section class="cartao">
+    <nav class="abas abas-cartao" aria-label="Fases do torneio">
+      @for (aba of abas; track aba.id) {
+        <a
+          [routerLink]="[]"
+          [queryParams]="{ fase: aba.id === 'todos' ? null : aba.id }"
+          [class.ativa]="fase() === aba.id"
+          [attr.aria-current]="fase() === aba.id ? 'page' : null"
+        >
+          {{ aba.rotulo }}
+          <span class="contador">{{ contagem()[aba.id] }}</span>
+        </a>
+      }
+    </nav>
+
+    <div class="ferramentas barra">
+      <div class="controle-grupo busca">
+        <span class="controle-prefixo"><app-icone nome="busca" [tamanho]="16" /></span>
+        <input
+          class="controle"
+          type="search"
+          placeholder="Buscar pelo nome do torneio"
+          aria-label="Buscar torneio"
+          [value]="busca()"
+          (input)="busca.set($any($event.target).value)"
+        />
+      </div>
+      <select
+        class="controle filtro-jogo"
+        aria-label="Filtrar por jogo"
+        [value]="jogoId() ?? ''"
+        (change)="escolherJogo($any($event.target).value)"
+      >
+        <option value="">Todos os jogos</option>
+        @for (jogo of jogos(); track jogo.id) {
+          <option [value]="jogo.id">{{ jogo.nome }}</option>
+        }
+      </select>
+      <span class="espaco"></span>
+      <button
+        type="button"
+        class="btn btn-fantasma btn-sm"
+        (click)="torneios.recarregar()"
+        [attr.aria-busy]="torneios.carregando() && !!torneios.dados()"
+      >
+        <app-icone nome="atualizar" [tamanho]="15" />
+        Atualizar
+      </button>
+    </div>
+
+    @if (torneios.erro()) {
+      <app-estado-vazio
+        [erro]="true"
+        titulo="Não foi possível carregar os torneios"
+        [texto]="torneios.erro()!"
+      >
+        <button type="button" class="btn btn-secundario btn-sm" (click)="torneios.recarregar()">
+          Tentar de novo
+        </button>
+      </app-estado-vazio>
+    } @else if (torneios.dados() === undefined) {
+      <div class="carregando">
+        @for (item of [1, 2, 3, 4]; track item) {
+          <div class="esqueleto" style="height: 44px"></div>
+        }
+      </div>
+    } @else if (filtrados().length === 0) {
+      @if ((torneios.dados() ?? []).length === 0) {
+        <app-estado-vazio
+          icone="trofeu"
+          titulo="Você ainda não criou torneios"
+          texto="O torneio nasce como rascunho. Quando estiver tudo certo, abra as inscrições e ele aparece no app dos jogadores."
+        >
+          <a routerLink="/painel/torneios/novo" class="btn btn-primario btn-sm">
+            <app-icone nome="mais" [tamanho]="15" />
+            Criar o primeiro torneio
+          </a>
+        </app-estado-vazio>
+      } @else {
+        <app-estado-vazio
+          icone="filtro"
+          titulo="Nenhum torneio com esses filtros"
+          texto="Troque a fase ou limpe a busca."
+        >
+          <button type="button" class="btn btn-secundario btn-sm" (click)="limparFiltros()">
+            Limpar filtros
+          </button>
+        </app-estado-vazio>
+      }
+    } @else {
+      <div class="tabela-envoltorio" [class.recarregando]="torneios.carregando()">
+        <table class="tabela">
+          <thead>
+            <tr>
+              <th>Torneio</th>
+              <th>Data</th>
+              <th>Status</th>
+              <th>Vagas</th>
+              <th class="numeros">Inscrição</th>
+              <th><span class="sr-only">Abrir</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (torneio of filtrados(); track torneio.id) {
+              <tr class="linha-clicavel" (click)="abrir(torneio)">
+                <td>
+                  <a
+                    class="titulo-torneio"
+                    [routerLink]="['/painel/torneios', torneio.id]"
+                    (click)="$event.stopPropagation()"
+                  >
+                    {{ torneio.titulo }}
+                  </a>
+                  <span class="jogo">
+                    {{ torneio.jogo.nome }}
+                    @if (torneio.formato) {
+                      · {{ torneio.formato.nome }}
+                    }
+                  </span>
+                </td>
+                <td class="data">
+                  {{ torneio.dataInicio | date: 'dd/MM/yyyy' }}
+                  <span>{{ torneio.dataInicio | date: 'EEE, HH:mm' }}</span>
+                </td>
+                <td><app-selo-torneio [status]="torneio.status" /></td>
+                <td>
+                  <app-medidor [ocupadas]="torneio.vagasOcupadas ?? 0" [total]="torneio.vagasMax" />
+                </td>
+                <td class="numeros">
+                  @if (torneio.taxaInscricao > 0) {
+                    {{ torneio.taxaInscricao | currency }}
+                  } @else {
+                    <span class="gratis">Grátis</span>
+                  }
+                </td>
+                <td class="acoes">
+                  <app-icone nome="chevron-direita" [tamanho]="18" class="texto-3" />
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+</div>

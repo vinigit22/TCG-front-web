@@ -2,12 +2,17 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { urlApi } from '../configuracao';
-import { Notificacao } from '../models/api';
+import { Notificacao, NotificacaoRequest } from '../models/api';
 
 // /notificacoes: sempre as da conta logada (ex.: "Inscrições encerradas" para a loja fazer o check-in)
 @Injectable({ providedIn: 'root' })
 export class NotificacaoService {
   private readonly http = inject(HttpClient);
+
+  // Só o admin: envia uma notificação para uma conta (para avisar várias, uma chamada por conta)
+  enviar(dados: NotificacaoRequest): Observable<Notificacao> {
+    return this.http.post<Notificacao>(urlApi('/notificacoes'), dados);
+  }
 
   // Mais recentes primeiro
   listar(): Observable<Notificacao[]> {

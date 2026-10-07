@@ -1,0 +1,254 @@
+:host {
+  display: block;
+  --conector: 22px;
+  --cor-linha: var(--tinta-300);
+}
+
+.rolagem {
+  overflow-x: auto;
+  padding: 0.25rem 0.25rem 0.75rem;
+}
+
+.chave {
+  display: flex;
+  align-items: stretch;
+  gap: calc(var(--conector) * 2);
+  min-width: max-content;
+}
+
+.rodada {
+  display: flex;
+  flex-direction: column;
+  width: 230px;
+}
+
+.rodada h4 {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-bottom: 0.6rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--cor-texto-3);
+}
+
+.ultima h4 {
+  color: var(--ambar-700);
+}
+
+.partidas {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.slot {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  padding: 0.45rem 0;
+}
+
+/* Linhas: saída para a direita e junção vertical de cada par */
+.rodada:not(.ultima) .slot::after {
+  content: '';
+  position: absolute;
+  right: calc(var(--conector) * -1);
+  top: 50%;
+  width: var(--conector);
+  border-top: 2px solid var(--cor-linha);
+}
+
+.rodada:not(.ultima) .slot:nth-child(odd)::before,
+.rodada:not(.ultima) .slot:nth-child(even)::before {
+  content: '';
+  position: absolute;
+  right: calc(var(--conector) * -1);
+  border-right: 2px solid var(--cor-linha);
+}
+
+.rodada:not(.ultima) .slot:nth-child(odd)::before {
+  top: 50%;
+  bottom: 0;
+}
+
+.rodada:not(.ultima) .slot:nth-child(even)::before {
+  top: 0;
+  bottom: 50%;
+}
+
+/* Entrada vinda da esquerda */
+.rodada + .rodada .partida::before {
+  content: '';
+  position: absolute;
+  left: calc(var(--conector) * -1 - 1px);
+  top: 50%;
+  width: var(--conector);
+  border-top: 2px solid var(--cor-linha);
+}
+
+/* ---------------------------------------------------------------- Cartão da partida */
+
+.partida {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 0;
+  border: 1px solid var(--cor-borda);
+  border-radius: 12px;
+  background: var(--cor-superficie);
+  box-shadow: var(--sombra-xs);
+  text-align: left;
+  transition:
+    border-color var(--transicao),
+    box-shadow var(--transicao),
+    transform var(--transicao);
+}
+
+.partida:not(:disabled):hover {
+  border-color: var(--roxo-300);
+  box-shadow: var(--sombra-md);
+  transform: translateY(-1px);
+}
+
+.partida:disabled {
+  cursor: default;
+  color: inherit;
+}
+
+.partida-topo {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.4rem 0.7rem;
+  border-bottom: 1px solid var(--tinta-150);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--cor-texto-3);
+}
+
+.estado {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.em_andamento {
+  border-color: var(--roxo-300);
+  box-shadow: 0 0 0 3px var(--roxo-50);
+}
+
+.em_andamento .estado {
+  color: var(--roxo-600);
+}
+
+.em_andamento .estado::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--roxo-500);
+  animation: pulsar 1.6s ease-in-out infinite;
+}
+
+.desempate {
+  border-color: #f2c66d;
+  box-shadow: 0 0 0 3px var(--ambar-100);
+}
+
+.desempate .estado {
+  color: var(--ambar-700);
+}
+
+.finalizada .estado {
+  color: var(--verde-700);
+}
+
+.lado {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.7rem;
+  font-size: 0.8125rem;
+}
+
+.lado + .lado {
+  border-top: 1px dashed var(--tinta-150);
+}
+
+.mini-avatar {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--roxo-100);
+  color: var(--roxo-700);
+  font-size: 0.6rem;
+  font-weight: 700;
+}
+
+.nome {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 600;
+}
+
+.placar {
+  min-width: 1.2rem;
+  font-weight: 700;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  color: var(--cor-texto-2);
+}
+
+.vazio .nome {
+  font-weight: 500;
+  font-style: italic;
+  color: var(--tinta-400);
+}
+
+.vazio .mini-avatar {
+  background: var(--tinta-100);
+  color: var(--tinta-400);
+}
+
+.vencedor {
+  background: var(--verde-50);
+}
+
+.vencedor .mini-avatar {
+  background: var(--verde-200);
+  color: var(--verde-900);
+}
+
+.vencedor .placar,
+.vencedor .nome {
+  color: var(--verde-900);
+}
+
+.check {
+  color: var(--verde-600);
+}
+
+.lado:last-child {
+  border-radius: 0 0 11px 11px;
+}
+
+.perdedor .nome,
+.perdedor .placar {
+  color: var(--tinta-400);
+}
+
+.perdedor .mini-avatar {
+  opacity: 0.6;
+}

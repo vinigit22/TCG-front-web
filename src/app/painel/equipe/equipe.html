@@ -1,0 +1,134 @@
+<div class="pagina">
+  <header class="pagina-cabecalho">
+    <div>
+      <h1>Equipe</h1>
+      <p>Quem ajuda a organizar a loja. Cada membro entra com a própria conta do app.</p>
+    </div>
+    <div class="pagina-acoes">
+      <button type="button" class="btn btn-primario" (click)="buscaAberta.set(true)">
+        <app-icone nome="usuario-mais" [tamanho]="16" />
+        Adicionar membro
+      </button>
+    </div>
+  </header>
+
+  <div class="papeis">
+    @for (item of papeis; track item.papel) {
+      <div class="papel">
+        <span class="papel-icone"><app-icone [nome]="item.icone" [tamanho]="18" /></span>
+        <div>
+          <strong>{{ rotuloPapel[item.papel] }}</strong>
+          <p>{{ item.texto }}</p>
+        </div>
+      </div>
+    }
+  </div>
+
+  <section class="cartao">
+    @if (membros.erro()) {
+      <app-estado-vazio
+        [erro]="true"
+        titulo="Não foi possível carregar a equipe"
+        [texto]="membros.erro()!"
+      />
+    } @else if (membros.dados() === undefined) {
+      <div class="cartao-corpo"><div class="esqueleto" style="height: 140px"></div></div>
+    } @else if (linhas().length === 0) {
+      <app-estado-vazio
+        icone="usuarios"
+        titulo="Só você por enquanto"
+        texto="Adicione organizadores e juízes para dividir o trabalho nos dias de torneio."
+      />
+    } @else {
+      <div class="tabela-envoltorio">
+        <table class="tabela">
+          <thead>
+            <tr>
+              <th>Membro</th>
+              <th>Papel</th>
+              <th>Ativo</th>
+              <th>Desde</th>
+              <th><span class="sr-only">Ações</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (linha of linhas(); track linha.membro.id) {
+              <tr
+                [class.recarregando]="ocupado() === linha.membro.id"
+                [class.inativo]="!linha.membro.ativo"
+              >
+                <td>
+                  <div class="pessoa">
+                    <span class="avatar avatar-sm" [class.verde]="!linha.ehALoja">{{
+                      iniciais(linha.nome)
+                    }}</span>
+                    <div>
+                      <strong>{{ linha.nome }}</strong>
+                      <span>{{ linha.detalhe }}</span>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <select
+                    class="controle papel-select"
+                    [attr.aria-label]="'Papel de ' + linha.nome"
+                    [disabled]="linha.ehALoja"
+                    (change)="atualizar(linha.membro, { papel: $any($event.target).value })"
+                  >
+                    @for (papel of opcoesPapel; track papel) {
+                      <option [value]="papel" [selected]="papel === linha.membro.papel">
+                        {{ rotuloPapel[papel] }}
+                      </option>
+                    }
+                  </select>
+                </td>
+                <td>
+                  <label class="interruptor">
+                    <input
+                      type="checkbox"
+                      [checked]="linha.membro.ativo"
+                      [disabled]="linha.ehALoja"
+                      (change)="atualizar(linha.membro, { ativo: $any($event.target).checked })"
+                    />
+                    <span class="sr-only">Membro ativo</span>
+                  </label>
+                </td>
+                <td class="texto-2">{{ linha.membro.criadoEm | date: 'dd/MM/yyyy' }}</td>
+                <td class="acoes">
+                  @if (!linha.ehALoja) {
+                    <button
+                      type="button"
+                      class="btn btn-perigo-suave btn-sm"
+                      (click)="remover(linha)"
+                    >
+                      <app-icone nome="lixeira" [tamanho]="15" />
+                      Remover
+                    </button>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+</div>
+
+<app-buscar-jogador
+  [(aberto)]="buscaAberta"
+  titulo="Adicionar à equipe"
+  descricao="O membro precisa ter conta no app. Busque pelo nickname do perfil."
+  acao="Adicionar"
+  [ocupado]="adicionando()"
+  (escolher)="adicionar($event)"
+>
+  <label class="campo papel-novo">
+    <span class="campo-rotulo">Papel na loja</span>
+    <select class="controle" [(ngModel)]="papelNovo" name="papelNovo">
+      @for (papel of opcoesPapel; track papel) {
+        <option [value]="papel">{{ rotuloPapel[papel] }}</option>
+      }
+    </select>
+  </label>
+</app-buscar-jogador>

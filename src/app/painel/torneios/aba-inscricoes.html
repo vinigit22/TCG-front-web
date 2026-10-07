@@ -1,0 +1,182 @@
+@if (!editavel() && torneio().status !== 'CANCELADO') {
+  <div class="faixa aviso-chave">
+    <app-icone nome="cadeado" />
+    <p>
+      A chave já foi gerada: as inscrições não mudam mais de status. O pagamento ainda pode ser
+      atualizado.
+    </p>
+  </div>
+}
+
+<div class="ferramentas barra">
+  <div class="segmentado" role="group" aria-label="Filtrar inscrições">
+    @for (item of filtros; track item.id) {
+      <button type="button" [class.ativa]="filtro() === item.id" (click)="filtro.set(item.id)">
+        {{ item.rotulo }}
+        <span class="contador">{{ contagem()[item.id] }}</span>
+      </button>
+    }
+  </div>
+  <span class="espaco"></span>
+  <div class="controle-grupo busca">
+    <span class="controle-prefixo"><app-icone nome="busca" [tamanho]="16" /></span>
+    <input
+      class="controle"
+      type="search"
+      placeholder="Nome ou nickname"
+      aria-label="Buscar jogador"
+      [value]="termo()"
+      (input)="termo.set($any($event.target).value)"
+    />
+  </div>
+  @if (podeInscrever()) {
+    <button type="button" class="btn btn-primario" (click)="buscaAberta.set(true)">
+      <app-icone nome="usuario-mais" [tamanho]="16" />
+      Inscrever jogador
+    </button>
+  }
+</div>
+
+@if (erro()) {
+  <app-estado-vazio
+    [erro]="true"
+    titulo="Não foi possível carregar as inscrições"
+    [texto]="erro()!"
+  />
+} @else if (carregando()) {
+  <div class="carregando">
+    @for (item of [1, 2, 3]; track item) {
+      <div class="esqueleto" style="height: 48px"></div>
+    }
+  </div>
+} @else if (inscricoes().length === 0) {
+  <app-estado-vazio
+    icone="usuarios"
+    titulo="Nenhuma inscrição ainda"
+    [texto]="
+      torneio().status === 'RASCUNHO'
+        ? 'Abra as inscrições para o torneio aparecer no app. Você também pode inscrever jogadores por aqui.'
+        : 'Os jogadores se inscrevem pelo app. Quem chegar sem inscrição você inscreve por aqui.'
+    "
+  >
+    @if (podeInscrever()) {
+      <button type="button" class="btn btn-secundario btn-sm" (click)="buscaAberta.set(true)">
+        <app-icone nome="usuario-mais" [tamanho]="15" />
+        Inscrever jogador
+      </button>
+    }
+  </app-estado-vazio>
+} @else if (visiveis().length === 0) {
+  <app-estado-vazio icone="filtro" titulo="Ninguém com esse filtro" [compacto]="true" />
+} @else {
+  <div class="tabela-envoltorio">
+    <table class="tabela">
+      <thead>
+        <tr>
+          <th>Jogador</th>
+          <th>Status</th>
+          <th>Pagamento</th>
+          <th>Inscrição</th>
+          <th>Check-in</th>
+          <th><span class="sr-only">Ações</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (inscricao of visiveis(); track inscricao.id) {
+          <tr [class.recarregando]="ocupada() === inscricao.id">
+            <td>
+              <div class="pessoa">
+                <span class="avatar avatar-sm verde">
+                  @if (imagem(inscricao.jogador); as src) {
+                    <img [src]="src" alt="" />
+                  } @else {
+                    {{ iniciais(inscricao.jogador.nome) }}
+                  }
+                </span>
+                <div>
+                  <strong>{{ inscricao.jogador.nome }}</strong>
+                  <span>&#64;{{ inscricao.jogador.nickname }}</span>
+                </div>
+              </div>
+            </td>
+            <td>
+              <span class="selo" [class]="'selo-' + tomStatus[inscricao.status]">{{
+                rotuloStatus[inscricao.status]
+              }}</span>
+            </td>
+            <td>
+              <select
+                class="pagamento"
+                [class]="'pagamento tom-' + tomPagamento[inscricao.pagamentoStatus]"
+                [attr.aria-label]="'Pagamento de ' + inscricao.jogador.nome"
+                [disabled]="torneio().status === 'CANCELADO' || inscricao.status === 'CANCELADO'"
+                (change)="mudarPagamento(inscricao, $any($event.target).value)"
+              >
+                @for (opcao of opcoesPagamento; track opcao) {
+                  <option [value]="opcao" [selected]="opcao === inscricao.pagamentoStatus">
+                    {{ rotuloPagamento[opcao] }}
+                  </option>
+                }
+              </select>
+            </td>
+            <td class="data">{{ inscricao.inscritoEm | date: "dd/MM 'às' HH:mm" }}</td>
+            <td class="data">
+              @if (inscricao.checkInEm) {
+                {{ inscricao.checkInEm | date: "dd/MM 'às' HH:mm" }}
+              } @else {
+                <span class="texto-3">—</span>
+              }
+            </td>
+            <td class="acoes">
+              <div class="acoes-linha">
+                @if (editavel() && inscricao.status === 'INSCRITO') {
+                  <button
+                    type="button"
+                    class="btn btn-secundario btn-sm"
+                    (click)="fazerCheckIn(inscricao)"
+                  >
+                    <app-icone nome="check" [tamanho]="14" [traco]="2.6" />
+                    Check-in
+                  </button>
+                }
+                @if (
+                  editavel() &&
+                  (inscricao.status === 'INSCRITO' ||
+                    inscricao.status === 'CONFIRMADO' ||
+                    inscricao.status === 'LISTA_ESPERA')
+                ) {
+                  <app-menu-acoes [pequeno]="true">
+                    @if (inscricao.status !== 'LISTA_ESPERA') {
+                      <button type="button" role="menuitem" (click)="marcarNoShow(inscricao)">
+                        <app-icone nome="relogio" [tamanho]="16" />
+                        Não compareceu
+                      </button>
+                    }
+                    <button
+                      type="button"
+                      role="menuitem"
+                      class="perigo"
+                      (click)="cancelar(inscricao)"
+                    >
+                      <app-icone nome="cancelar" [tamanho]="16" />
+                      Cancelar inscrição
+                    </button>
+                  </app-menu-acoes>
+                }
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}
+
+<app-buscar-jogador
+  [(aberto)]="buscaAberta"
+  titulo="Inscrever jogador"
+  descricao="Busque pelo nickname do perfil no app. Se o torneio estiver lotado, ele entra na lista de espera."
+  acao="Inscrever"
+  [ocupado]="inscrevendo()"
+  (escolher)="inscrever($event)"
+/>

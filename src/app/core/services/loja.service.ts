@@ -10,6 +10,10 @@ import { AgendaLoja, Loja, LojaMembro, LojaMembroRequest, LojaRequest } from '..
 export class LojaService {
   private readonly http = inject(HttpClient);
 
+  listar(): Observable<Loja[]> {
+    return this.http.get<Loja[]>(urlApi('/lojas'));
+  }
+
   buscar(id: number): Observable<Loja> {
     return this.http.get<Loja>(urlApi(`/lojas/${id}`));
   }
@@ -21,6 +25,15 @@ export class LojaService {
   // Substitui o perfil inteiro: mande todos os campos, inclusive enderecoId (omitido = sem endereço)
   atualizar(id: number, dados: LojaRequest): Observable<Loja> {
     return this.http.put<Loja>(urlApi(`/lojas/${id}`), dados);
+  }
+
+  // Só o admin: o selo de loja verificada aparece para os jogadores
+  alterarVerificacao(id: number, verificada: boolean): Observable<Loja> {
+    return this.http.put<Loja>(urlApi(`/lojas/${id}/verificacao`), { verificada });
+  }
+
+  excluir(id: number): Observable<void> {
+    return this.http.delete<void>(urlApi(`/lojas/${id}`));
   }
 
   // Eventos e torneios da loja, por data

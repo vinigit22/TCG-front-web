@@ -1,0 +1,126 @@
+<div class="pagina estreita">
+  <header class="pagina-cabecalho">
+    <div>
+      <h1>Segurança</h1>
+      <p>Dados de acesso da conta e troca de senha.</p>
+    </div>
+  </header>
+
+  <section class="cartao">
+    <header class="cartao-cabecalho">
+      <h2>Sua conta</h2>
+    </header>
+    <div class="cartao-corpo">
+      <dl class="detalhes">
+        <div>
+          <dt>Email</dt>
+          <dd>{{ sessao()?.email }}</dd>
+        </div>
+        <div>
+          <dt>Tipo</dt>
+          <dd>{{ sessao() ? rotuloTipo[sessao()!.tipo] : '—' }}</dd>
+        </div>
+        <div>
+          <dt>Email verificado</dt>
+          <dd>
+            @if (conta.dados(); as dados) {
+              <span
+                class="selo"
+                [class.selo-verde]="dados.emailVerificado"
+                [class.selo-ambar]="!dados.emailVerificado"
+              >
+                {{ dados.emailVerificado ? 'Sim' : 'Ainda não' }}
+              </span>
+            } @else {
+              —
+            }
+          </dd>
+        </div>
+        <div>
+          <dt>Último acesso</dt>
+          <dd>
+            {{ conta.dados()?.ultimoLogin ? tempoRelativo(conta.dados()!.ultimoLogin) : '—' }}
+          </dd>
+        </div>
+        <div>
+          <dt>Conta criada em</dt>
+          <dd>{{ conta.dados()?.criadoEm | date: 'dd/MM/yyyy' }}</dd>
+        </div>
+      </dl>
+    </div>
+  </section>
+
+  <form class="cartao" [formGroup]="form" (ngSubmit)="alterarSenha()" novalidate>
+    <header class="cartao-cabecalho">
+      <div>
+        <h2>Alterar senha</h2>
+        <p>Ao trocar a senha, as sessões abertas em outros navegadores e no app são encerradas.</p>
+      </div>
+    </header>
+    <div class="cartao-corpo form-grade">
+      <label class="campo inteiro">
+        <span class="campo-rotulo">Senha atual</span>
+        <input
+          class="controle"
+          [type]="mostrarSenha() ? 'text' : 'password'"
+          formControlName="senhaAtual"
+          autocomplete="current-password"
+        />
+        @if (erro('senhaAtual', 'A senha atual'); as mensagem) {
+          <span class="campo-erro">{{ mensagem }}</span>
+        }
+      </label>
+      <label class="campo">
+        <span class="campo-rotulo">Nova senha</span>
+        <input
+          class="controle"
+          [type]="mostrarSenha() ? 'text' : 'password'"
+          formControlName="novaSenha"
+          autocomplete="new-password"
+        />
+        @if (erro('novaSenha', 'A nova senha'); as mensagem) {
+          <span class="campo-erro">{{ mensagem }}</span>
+        } @else {
+          <span class="campo-ajuda">Pelo menos 6 caracteres.</span>
+        }
+      </label>
+      <label class="campo">
+        <span class="campo-rotulo">Repita a nova senha</span>
+        <input
+          class="controle"
+          [type]="mostrarSenha() ? 'text' : 'password'"
+          formControlName="confirmar"
+          autocomplete="new-password"
+        />
+        @if (form.hasError('senhasDiferentes') && form.controls.confirmar.touched) {
+          <span class="campo-erro">As senhas não são iguais.</span>
+        }
+      </label>
+      <label class="interruptor inteiro">
+        <input
+          type="checkbox"
+          [checked]="mostrarSenha()"
+          (change)="mostrarSenha.set(!mostrarSenha())"
+        />
+        Mostrar senhas
+      </label>
+    </div>
+    <footer class="cartao-rodape">
+      <button type="submit" class="btn btn-primario" [attr.aria-busy]="salvando()">
+        <app-icone nome="cadeado" [tamanho]="15" />
+        Alterar senha
+      </button>
+    </footer>
+  </form>
+
+  <section class="cartao sair">
+    <div>
+      <h2>Sair da conta</h2>
+      <p>Encerra a sessão neste navegador.</p>
+    </div>
+    <button type="button" class="btn btn-perigo-suave" (click)="sair()">
+      <app-icone nome="sair" [tamanho]="16" />
+      Sair
+    </button>
+  </section>
+</div>

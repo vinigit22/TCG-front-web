@@ -1,0 +1,134 @@
+<div class="pagina">
+  <header class="pagina-cabecalho">
+    <div>
+      <h1>Jogadores</h1>
+      <p>
+        Perfis públicos dos jogadores do app, com as medalhas conquistadas nos torneios. Para
+        desativar uma conta, use Contas.
+      </p>
+    </div>
+  </header>
+
+  <section class="cartao">
+    <div class="ferramentas barra">
+      <div class="controle-grupo busca">
+        <span class="controle-prefixo"><app-icone nome="busca" [tamanho]="16" /></span>
+        <input
+          class="controle"
+          type="search"
+          placeholder="Nome, nickname ou cidade"
+          aria-label="Buscar jogador"
+          [value]="busca()"
+          (input)="busca.set($any($event.target).value)"
+        />
+      </div>
+      <span class="espaco"></span>
+      <div class="segmentado" role="group" aria-label="Ordenar">
+        <button
+          type="button"
+          [class.ativa]="ordem() === 'recentes'"
+          (click)="ordem.set('recentes')"
+        >
+          Recentes
+        </button>
+        <button
+          type="button"
+          [class.ativa]="ordem() === 'medalhas'"
+          (click)="ordem.set('medalhas')"
+        >
+          Medalhas
+        </button>
+        <button type="button" [class.ativa]="ordem() === 'nome'" (click)="ordem.set('nome')">
+          Nome
+        </button>
+      </div>
+    </div>
+
+    @if (jogadores.erro()) {
+      <app-estado-vazio
+        [erro]="true"
+        titulo="Não foi possível carregar os jogadores"
+        [texto]="jogadores.erro()!"
+      />
+    } @else if (jogadores.dados() === undefined) {
+      <div class="cartao-corpo"><div class="esqueleto" style="height: 200px"></div></div>
+    } @else if (visiveis().length === 0) {
+      <app-estado-vazio icone="usuarios" titulo="Nenhum jogador encontrado" />
+    } @else {
+      <div class="tabela-envoltorio">
+        <table class="tabela">
+          <thead>
+            <tr>
+              <th>Jogador</th>
+              <th>Cidade</th>
+              <th>Medalhas</th>
+              <th>Conta</th>
+              <th>Desde</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (linha of visiveis(); track linha.jogador.contaId) {
+              <tr>
+                <td>
+                  <div class="pessoa">
+                    <span class="avatar verde">
+                      @if (linha.imagem) {
+                        <img [src]="linha.imagem" alt="" />
+                      } @else {
+                        {{ iniciais(linha.jogador.nome) }}
+                      }
+                    </span>
+                    <div>
+                      <strong>{{ linha.jogador.nome }}</strong>
+                      <span>&#64;{{ linha.jogador.nickname }}</span>
+                    </div>
+                  </div>
+                </td>
+                <td class="texto-2">
+                  {{
+                    linha.jogador.cidade ? linha.jogador.cidade + '/' + linha.jogador.estado : '—'
+                  }}
+                </td>
+                <td>
+                  <div class="medalhas">
+                    <span class="medalha ouro" [class.zerada]="!linha.medalhas.ouro" title="Ouro">
+                      <app-icone nome="trofeu" [tamanho]="13" /> {{ linha.medalhas.ouro }}
+                    </span>
+                    <span
+                      class="medalha prata"
+                      [class.zerada]="!linha.medalhas.prata"
+                      title="Prata"
+                    >
+                      <app-icone nome="trofeu" [tamanho]="13" /> {{ linha.medalhas.prata }}
+                    </span>
+                    <span
+                      class="medalha bronze"
+                      [class.zerada]="!linha.medalhas.bronze"
+                      title="Bronze"
+                    >
+                      <app-icone nome="trofeu" [tamanho]="13" /> {{ linha.medalhas.bronze }}
+                    </span>
+                  </div>
+                </td>
+                <td>
+                  @if (linha.conta) {
+                    <span
+                      class="selo"
+                      [class.selo-verde]="linha.conta.ativo"
+                      [class.selo-vermelho]="!linha.conta.ativo"
+                    >
+                      {{ linha.conta.ativo ? 'Ativa' : 'Desativada' }}
+                    </span>
+                  } @else {
+                    <span class="texto-3">—</span>
+                  }
+                </td>
+                <td class="texto-2">{{ linha.jogador.criadoEm | date: 'dd/MM/yyyy' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+</div>

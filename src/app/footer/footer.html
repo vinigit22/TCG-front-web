@@ -1,3 +1,30 @@
 <footer class="footer">
-    <img src="/imagens/logo2.png" alt="MERUEM.INC" class="logo-footer">
+  <div class="footer-grade">
+    <div class="marca">
+      <img src="/imagens/logo2.png" alt="MERUEM.INC" class="logo-footer" width="145" height="53" />
+      <p>Torneios, trocas e eventos de card game: a loja organiza, o jogador acompanha pelo app.</p>
+    </div>
+    <nav aria-label="Site">
+      <h2>TopDeck</h2>
+      <ul>
+        <li><a routerLink="/jogos">Jogos</a></li>
+        <li><a routerLink="/torneios">Torneios</a></li>
+        <li><a routerLink="/quem-somos">Quem somos</a></li>
+      </ul>
+    </nav>
+    <nav aria-label="Para lojas">
+      <h2>Para lojas</h2>
+      <ul>
+        <li><a routerLink="/preco">Planos</a></li>
+        <li><a routerLink="/cadastro">Cadastre sua loja</a></li>
+        <li><a routerLink="/login">Entrar no painel</a></li>
+      </ul>
+    </nav>
+  </div>
+  <div class="footer-base">
+    <p>© {{ ano }} TopDeck · uma criação MERUEM.INC</p>
+    <p>
+      Magic, Pokémon, Yu-Gi-Oh!, One Piece, Digimon e Lorcana são marcas dos seus respectivos donos.
+    </p>
+  </div>
 </footer>

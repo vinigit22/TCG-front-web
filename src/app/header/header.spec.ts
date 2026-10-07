@@ -8,6 +8,7 @@ describe('Header', () => {
   let fixture: ComponentFixture<Header>;
 
   beforeEach(async () => {
+    localStorage.clear();
     await TestBed.configureTestingModule({
       imports: [Header],
       providers: [provideRouter([])],
@@ -27,10 +28,13 @@ describe('Header', () => {
       (fixture.nativeElement as HTMLElement).querySelectorAll('a'),
     ) as HTMLAnchorElement[];
     expect(links.map((link) => link.getAttribute('href'))).toEqual([
+      '/home',
       '/jogos',
+      '/torneios',
       '/preco',
-      '/login',
       '/quem-somos',
+      '/login',
+      '/cadastro',
     ]);
   });
 });

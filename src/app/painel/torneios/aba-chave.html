@@ -1,0 +1,210 @@
+@if (carregando()) {
+  <div class="cartao-corpo"><div class="esqueleto" style="height: 260px"></div></div>
+} @else if (linhas().length === 0) {
+  @if (torneio().status === 'CANCELADO') {
+    <app-estado-vazio
+      icone="cancelar"
+      titulo="Torneio cancelado"
+      texto="Este torneio não terá chave."
+    />
+  } @else {
+    <div class="preparar">
+      <div class="preparar-texto">
+        <span class="preparar-icone"><app-icone nome="chave" [tamanho]="22" /></span>
+        <h3>
+          {{
+            inscricoesEncerradas()
+              ? 'Tudo pronto para sortear?'
+              : 'A chave sai depois das inscrições'
+          }}
+        </h3>
+        <p>
+          O sistema sorteia quem fez check-in numa chave eliminatória. Se o número não fechar uma
+          potência de 2, alguns jogadores avançam direto (bye).
+        </p>
+      </div>
+      <ul class="requisitos">
+        <li [class.ok]="inscricoesEncerradas()">
+          <span class="marca"
+            ><app-icone
+              [nome]="inscricoesEncerradas() ? 'check' : 'relogio'"
+              [tamanho]="14"
+              [traco]="2.6"
+          /></span>
+          Inscrições encerradas
+        </li>
+        <li [class.ok]="confirmados() >= minimo">
+          <span class="marca"
+            ><app-icone
+              [nome]="confirmados() >= minimo ? 'check' : 'relogio'"
+              [tamanho]="14"
+              [traco]="2.6"
+          /></span>
+          Pelo menos {{ minimo }} jogadores com check-in ({{ confirmados() }} agora)
+        </li>
+      </ul>
+      <button
+        type="button"
+        class="btn btn-primario btn-lg"
+        [disabled]="!podeGerar()"
+        [attr.aria-busy]="gerando()"
+        (click)="gerarChave()"
+      >
+        <app-icone nome="raio" [tamanho]="17" />
+        Sortear e gerar chave
+      </button>
+    </div>
+  }
+} @else {
+  <div class="topo-chave">
+    @if (campeao(); as nome) {
+      <div class="campeao">
+        <span class="campeao-icone"><app-icone nome="trofeu" [tamanho]="20" /></span>
+        <div>
+          <span>Campeão</span>
+          <strong>&#64;{{ nome }}</strong>
+        </div>
+      </div>
+    } @else {
+      <div class="progresso">
+        <strong>{{ andamento().finalizadas }} de {{ andamento().total }}</strong> partidas decididas
+        <div class="progresso-trilho">
+          <div
+            [style.width.%]="
+              andamento().total ? (andamento().finalizadas / andamento().total) * 100 : 0
+            "
+          ></div>
+        </div>
+      </div>
+    }
+    @if (interativa()) {
+      <p class="dica">
+        <app-icone nome="info" [tamanho]="15" /> Clique numa partida para lançar o resultado.
+      </p>
+    }
+  </div>
+  <div class="area-chave">
+    <app-chave-visual
+      [linhas]="linhas()"
+      [interativa]="interativa()"
+      (selecionar)="abrirPartida($event)"
+    />
+  </div>
+}
+
+<app-modal
+  [aberto]="modalAberto()"
+  (abertoChange)="!$event && fecharPartida()"
+  [titulo]="partida() ? 'Mesa ' + partida()!.mesa + ' · ' + partida()!.nomeRodada : ''"
+  [descricao]="ehFinal() ? 'Esta é a final: o vencedor é o campeão do torneio.' : undefined"
+>
+  @if (partida(); as p) {
+    @if (emDesempate()) {
+      <p class="explica">
+        A partida terminou empatada ({{ p.gamesA }} a {{ p.gamesB }}). Quem vence o desempate?
+      </p>
+      <div class="desempate">
+        <button type="button" class="lado-botao" [disabled]="salvando()" (click)="desempatar('A')">
+          <span class="lado-nome">&#64;{{ p.jogadorA }}</span>
+          <span class="lado-ajuda">vence o desempate</span>
+        </button>
+        <button type="button" class="lado-botao" [disabled]="salvando()" (click)="desempatar('B')">
+          <span class="lado-nome">&#64;{{ p.jogadorB }}</span>
+          <span class="lado-ajuda">vence o desempate</span>
+        </button>
+      </div>
+    } @else if (p.status === 'FINALIZADA') {
+      <div class="resumo">
+        <div class="resumo-lado" [class.ganhou]="p.vencedor === p.jogadorA">
+          <span>&#64;{{ p.jogadorA ?? '—' }}</span>
+          <b>{{ p.gamesA }}</b>
+        </div>
+        <span class="x">×</span>
+        <div class="resumo-lado" [class.ganhou]="p.vencedor === p.jogadorB">
+          <b>{{ p.gamesB }}</b>
+          <span>&#64;{{ p.jogadorB ?? '—' }}</span>
+        </div>
+      </div>
+      <p class="explica">
+        Lançou errado? Reabra a partida para corrigir. Só dá enquanto a partida seguinte não
+        começou.
+      </p>
+    } @else if (!p.jogadorA || !p.jogadorB) {
+      <p class="explica">Esta partida ainda espera os vencedores das partidas anteriores.</p>
+    } @else {
+      <form id="form-resultado" (ngSubmit)="registrar()">
+        <div class="placar">
+          @for (lado of ['A', 'B']; track lado) {
+            <div class="placar-lado">
+              <span class="placar-nome">&#64;{{ lado === 'A' ? p.jogadorA : p.jogadorB }}</span>
+              <div class="passos">
+                <button
+                  type="button"
+                  class="btn btn-secundario btn-icone btn-sm"
+                  (click)="ajustar($any(lado), -1)"
+                  aria-label="Menos um game"
+                >
+                  −
+                </button>
+                <output class="placar-valor">{{ lado === 'A' ? gamesA : gamesB }}</output>
+                <button
+                  type="button"
+                  class="btn btn-secundario btn-icone btn-sm"
+                  (click)="ajustar($any(lado), 1)"
+                  aria-label="Mais um game"
+                >
+                  +
+                </button>
+              </div>
+              <span class="placar-rotulo">games</span>
+            </div>
+            @if (lado === 'A') {
+              <span class="x">×</span>
+            }
+          }
+        </div>
+
+        <fieldset class="resultados">
+          <legend class="campo-rotulo">Resultado</legend>
+          @for (opcao of opcoes(); track opcao.valor) {
+            <label class="resultado-opcao">
+              <input type="radio" name="resultado" [value]="opcao.valor" [(ngModel)]="resultado" />
+              <span>
+                <strong>{{ opcao.rotulo }}</strong>
+                <small>{{ opcao.ajuda }}</small>
+              </span>
+            </label>
+          }
+        </fieldset>
+      </form>
+    }
+  }
+
+  <div rodape>
+    <button type="button" class="btn btn-secundario" (click)="fecharPartida()">Fechar</button>
+    @if (partida(); as p) {
+      @if (p.status === 'FINALIZADA' && !emDesempate()) {
+        <button
+          type="button"
+          class="btn btn-secundario"
+          [attr.aria-busy]="salvando()"
+          (click)="reabrir()"
+        >
+          <app-icone nome="desfazer" [tamanho]="15" />
+          Reabrir para corrigir
+        </button>
+      } @else if (!emDesempate() && p.jogadorA && p.jogadorB) {
+        <button
+          type="submit"
+          form="form-resultado"
+          class="btn btn-primario"
+          [disabled]="!resultado"
+          [attr.aria-busy]="salvando()"
+        >
+          <app-icone nome="check" [tamanho]="15" />
+          Registrar resultado
+        </button>
+      }
+    }
+  </div>
+</app-modal>
