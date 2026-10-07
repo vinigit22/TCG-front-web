@@ -6,6 +6,14 @@
       atualizado.
     </p>
   </div>
+} @else if (editavel() && torneio().taxaInscricao > 0) {
+  <div class="faixa aviso-chave">
+    <app-icone nome="dinheiro" />
+    <p>
+      <strong>Só entra na chave quem pagou.</strong> O jogador paga direto na loja; marque o
+      pagamento como pago (ou isento) para liberar o check-in.
+    </p>
+  </div>
 }
 
 <div class="ferramentas barra">
@@ -133,9 +141,19 @@
                   <button
                     type="button"
                     class="btn btn-secundario btn-sm"
+                    [class.pendente]="!pagamentoLiberado(inscricao.pagamentoStatus)"
+                    [title]="
+                      pagamentoLiberado(inscricao.pagamentoStatus)
+                        ? 'Confirmar presença'
+                        : 'Pagamento pendente: confirme o recebimento para fazer o check-in'
+                    "
                     (click)="fazerCheckIn(inscricao)"
                   >
-                    <app-icone nome="check" [tamanho]="14" [traco]="2.6" />
+                    <app-icone
+                      [nome]="pagamentoLiberado(inscricao.pagamentoStatus) ? 'check' : 'dinheiro'"
+                      [tamanho]="14"
+                      [traco]="2.6"
+                    />
                     Check-in
                   </button>
                 }

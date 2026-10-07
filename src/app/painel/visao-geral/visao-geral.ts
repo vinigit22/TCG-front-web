@@ -116,7 +116,7 @@ function tarefaDoTorneio(torneio: Torneio): Tarefa[] {
         {
           icone: 'usuario-check',
           titulo: torneio.titulo,
-          texto: 'Inscrições encerradas: faça o check-in e gere a chave.',
+          texto: 'Inscrições encerradas: receba os pagamentos, faça o check-in e gere a chave.',
           link,
           queryParams: { aba: 'inscricoes' },
         },

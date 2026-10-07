@@ -19,8 +19,8 @@
           }}
         </h3>
         <p>
-          O sistema sorteia quem fez check-in numa chave eliminatória. Se o número não fechar uma
-          potência de 2, alguns jogadores avançam direto (bye).
+          O sistema sorteia quem fez check-in (com o pagamento em dia) numa chave eliminatória. Se o
+          número não fechar uma potência de 2, alguns jogadores avançam direto (bye).
         </p>
       </div>
       <ul class="requisitos">
@@ -41,6 +41,19 @@
               [traco]="2.6"
           /></span>
           Pelo menos {{ minimo }} jogadores com check-in ({{ confirmados() }} agora)
+        </li>
+        <li [class.ok]="semPagamento().length === 0">
+          <span class="marca"
+            ><app-icone
+              [nome]="semPagamento().length === 0 ? 'check' : 'dinheiro'"
+              [tamanho]="14"
+              [traco]="2.6"
+          /></span>
+          @if (semPagamento().length === 0) {
+            Todos com check-in estão com o pagamento em dia
+          } @else {
+            Pagamento pendente de {{ semPagamento().join(', ') }}
+          }
         </li>
       </ul>
       <button

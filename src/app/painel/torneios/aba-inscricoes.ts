@@ -17,7 +17,7 @@ import {
   StatusPagamento,
   Torneio,
 } from '../../core/models/api';
-import { podeAlterarInscricoes } from '../../core/regras';
+import { pagamentoLiberado, podeAlterarInscricoes } from '../../core/regras';
 import { ROTULOS_STATUS_INSCRICAO, ROTULOS_STATUS_PAGAMENTO } from '../../core/rotulos';
 import { InscricaoService } from '../../core/services/inscricao.service';
 import { Avisos } from '../../ui/avisos';
@@ -37,6 +37,8 @@ const FILTROS: { id: Filtro; rotulo: string; status: StatusInscricao[] }[] = [
   { id: 'espera', rotulo: 'Lista de espera', status: ['LISTA_ESPERA'] },
   { id: 'canceladas', rotulo: 'Canceladas', status: ['CANCELADO', 'NO_SHOW'] },
 ];
+
+const MOEDA = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
 
 // Ordem da tabela: quem precisa de ação primeiro
 const ORDEM: Record<StatusInscricao, number> = {
@@ -79,6 +81,7 @@ export class AbaInscricoes {
   protected readonly tomPagamento = TOM_PAGAMENTO;
   protected readonly opcoesPagamento = Object.keys(ROTULOS_STATUS_PAGAMENTO) as StatusPagamento[];
   protected readonly iniciais = iniciais;
+  protected readonly pagamentoLiberado = pagamentoLiberado;
 
   // Depois da chave sorteada, nenhuma inscrição muda de status
   protected readonly editavel = computed(
@@ -118,12 +121,27 @@ export class AbaInscricoes {
     return urlImagem(jogador.imagemPerfil);
   }
 
-  protected fazerCheckIn(inscricao: Inscricao): void {
-    this.executar(
-      inscricao,
-      this.servico.fazerCheckIn(inscricao.id),
-      `Check-in de ${inscricao.jogador.nickname} feito`,
-    );
+  // Só faz check-in quem está com o pagamento em dia. Com pagamento pendente, a loja confirma que
+  // recebeu e as duas coisas são gravadas juntas (o backend aplica o pagamento antes do status).
+  protected async fazerCheckIn(inscricao: Inscricao): Promise<void> {
+    const mensagem = `Check-in de ${inscricao.jogador.nickname} feito`;
+    if (pagamentoLiberado(inscricao.pagamentoStatus)) {
+      this.executar(inscricao, this.servico.fazerCheckIn(inscricao.id), mensagem);
+      return;
+    }
+    const valor = MOEDA.format(this.torneio().taxaInscricao);
+    const sim = await this.confirmacao.perguntar({
+      titulo: 'Pagamento pendente',
+      mensagem: `Só entra na chave quem pagou. Você recebeu ${valor} de ${inscricao.jogador.nome}? O pagamento fica marcado como pago e o check-in é feito.`,
+      confirmar: 'Recebi, fazer check-in',
+    });
+    if (sim) {
+      this.executar(
+        inscricao,
+        this.servico.atualizar(inscricao.id, { pagamentoStatus: 'PAGO', status: 'CONFIRMADO' }),
+        `Pagamento recebido e check-in de ${inscricao.jogador.nickname} feito`,
+      );
+    }
   }
 
   protected mudarPagamento(inscricao: Inscricao, valor: string): void {

@@ -168,7 +168,7 @@
           ><app-icone nome="usuario-check" [tamanho]="16" /> Check-in feito</span
         >
         <span class="kpi-valor">{{ numeros().confirmados }}</span>
-        <span class="kpi-detalhe">só quem fez check-in entra na chave</span>
+        <span class="kpi-detalhe">só entra na chave quem pagou e fez check-in</span>
       </div>
       <div class="kpi">
         <span class="kpi-rotulo"><app-icone nome="relogio" [tamanho]="16" /> Lista de espera</span>
@@ -226,6 +226,7 @@
             [linhas]="chave.dados() ?? []"
             [carregando]="chave.dados() === undefined"
             [confirmados]="numeros().confirmados"
+            [semPagamento]="numeros().semPagamento"
             (alterou)="atualizarTudo()"
           />
         }

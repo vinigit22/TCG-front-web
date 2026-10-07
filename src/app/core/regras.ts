@@ -1,6 +1,15 @@
-import { StatusTorneio } from './models/api';
+import { StatusPagamento, StatusTorneio } from './models/api';
 
-// Regras que o backend também aplica (TorneioService). Usar no painel evita oferecer ações que a API recusaria.
+// Regras que o backend também aplica (TorneioService, InscricaoService, ChaveamentoService).
+// Usar no painel evita oferecer ações que a API recusaria.
+
+// A plataforma não processa pagamentos: o jogador paga na loja e a equipe marca como pago.
+// Só faz check-in (e entra na chave) quem está com o pagamento em dia. Torneio gratuito já nasce ISENTO.
+export const PAGAMENTOS_LIBERADOS: StatusPagamento[] = ['PAGO', 'ISENTO'];
+
+export function pagamentoLiberado(status: StatusPagamento): boolean {
+  return PAGAMENTOS_LIBERADOS.includes(status);
+}
 
 // vagasMax precisa ser uma destas (a chave é eliminatória)
 export const VAGAS_PERMITIDAS = [2, 4, 8, 16, 32, 64, 128, 256] as const;
@@ -16,7 +25,8 @@ export const TRANSICOES_STATUS_TORNEIO: Record<StatusTorneio, StatusTorneio[]> =
   CANCELADO: [],
 };
 
-// A chave só pode ser gerada com as inscrições encerradas e pelo menos 2 confirmados (check-in)
+// A chave só pode ser gerada com as inscrições encerradas, pelo menos 2 confirmados (check-in)
+// e nenhum confirmado com pagamento pendente
 export const STATUS_PARA_GERAR_CHAVE: StatusTorneio = 'INSCRICOES_ENCERRADAS';
 export const MINIMO_CONFIRMADOS_PARA_CHAVE = 2;
 

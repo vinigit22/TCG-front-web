@@ -4,7 +4,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { map } from 'rxjs';
 import { StatusTorneio } from '../../core/models/api';
-import { TRANSICOES_STATUS_TORNEIO } from '../../core/regras';
+import { pagamentoLiberado, TRANSICOES_STATUS_TORNEIO } from '../../core/regras';
 import { InscricaoService } from '../../core/services/inscricao.service';
 import { LojaService } from '../../core/services/loja.service';
 import { ResultadoService } from '../../core/services/resultado.service';
@@ -103,6 +103,11 @@ export class DetalheTorneio {
       confirmados: lista.filter((inscricao) => inscricao.status === 'CONFIRMADO').length,
       espera: lista.filter((inscricao) => inscricao.status === 'LISTA_ESPERA').length,
       pendentes: ativas.filter((inscricao) => inscricao.pagamentoStatus === 'PENDENTE').length,
+      // Check-in feito mas o pagamento voltou a ficar pendente: impede gerar a chave
+      semPagamento: lista
+        .filter((inscricao) => inscricao.status === 'CONFIRMADO')
+        .filter((inscricao) => !pagamentoLiberado(inscricao.pagamentoStatus))
+        .map((inscricao) => '@' + inscricao.jogador.nickname),
     };
   });
 

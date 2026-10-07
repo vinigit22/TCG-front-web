@@ -38,6 +38,8 @@ export class AbaChave {
   readonly linhas = input.required<Chaveamento[]>();
   readonly carregando = input(false);
   readonly confirmados = input(0);
+  // Nicknames de quem fez check-in mas está com pagamento pendente (o backend recusa a chave)
+  readonly semPagamento = input<string[]>([]);
   readonly alterou = output<void>();
 
   private readonly torneios = inject(TorneioService);
@@ -60,7 +62,10 @@ export class AbaChave {
     () => this.torneio().status === STATUS_PARA_GERAR_CHAVE,
   );
   protected readonly podeGerar = computed(
-    () => this.inscricoesEncerradas() && this.confirmados() >= this.minimo,
+    () =>
+      this.inscricoesEncerradas() &&
+      this.confirmados() >= this.minimo &&
+      this.semPagamento().length === 0,
   );
   protected readonly interativa = computed(() => this.torneio().status === 'EM_ANDAMENTO');
 

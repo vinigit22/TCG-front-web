@@ -70,6 +70,18 @@
   color: var(--tinta-700);
 }
 
+/* Check-in com pagamento pendente: abre a confirmação de recebimento */
+.btn.pendente {
+  border-color: #f2c66d;
+  color: var(--ambar-700);
+}
+
+.btn.pendente:hover:not(:disabled) {
+  background: var(--ambar-100);
+  border-color: var(--ambar-500);
+  color: var(--ambar-700);
+}
+
 .acoes-linha {
   display: flex;
   justify-content: flex-end;

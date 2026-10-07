@@ -15,8 +15,10 @@ import { configuracao } from './core/configuracao';
 import { authInterceptor } from './core/http/auth.interceptor';
 import { mockApiInterceptor } from './core/http/mock-api.interceptor';
 import { Chaveamento, Inscricao, Torneio } from './core/models/api';
+import { pagamentoLiberado } from './core/regras';
 import { AuthService } from './core/services/auth.service';
 import { Login } from './login/login';
+import { AbaChave } from './painel/torneios/aba-chave';
 import { AbaInscricoes } from './painel/torneios/aba-inscricoes';
 import { VisaoGeral } from './painel/visao-geral/visao-geral';
 import { ChaveVisual } from './ui/chave-visual';
@@ -216,5 +218,62 @@ describe('painéis (modo mock)', () => {
         botao.textContent?.includes('Inscrever jogador'),
       ),
     ).toBe(false);
+  });
+
+  it('só pagamento PAGO ou ISENTO libera o check-in', () => {
+    expect(pagamentoLiberado('PAGO')).toBe(true);
+    expect(pagamentoLiberado('ISENTO')).toBe(true);
+    expect(pagamentoLiberado('PENDENTE')).toBe(false);
+    expect(pagamentoLiberado('REEMBOLSADO')).toBe(false);
+  });
+
+  it('o check-in de quem não pagou fica destacado e a regra aparece na aba', async () => {
+    const torneio = { id: 1, status: 'INSCRICOES_ENCERRADAS', taxaInscricao: 25 } as Torneio;
+    const inscricao = (id: number, pagamentoStatus: string) =>
+      ({
+        id,
+        status: 'INSCRITO',
+        pagamentoStatus,
+        inscritoEm: '2026-10-05T09:00:00',
+        checkInEm: null,
+        jogador: {
+          contaId: id + 1,
+          nome: `Jogador ${id}`,
+          nickname: `jogador${id}`,
+          imagemPerfil: null,
+        },
+      }) as unknown as Inscricao;
+    const fixture = TestBed.createComponent(AbaInscricoes);
+    fixture.componentRef.setInput('torneio', torneio);
+    fixture.componentRef.setInput('inscricoes', [inscricao(1, 'PAGO'), inscricao(2, 'PENDENTE')]);
+    await fixture.whenStable();
+    const tela = fixture.nativeElement as HTMLElement;
+
+    expect(tela.textContent).toContain('Só entra na chave quem pagou');
+    const checkIns = [...tela.querySelectorAll('tbody button')].filter((botao) =>
+      botao.textContent?.includes('Check-in'),
+    );
+    expect(checkIns.map((botao) => botao.classList.contains('pendente'))).toEqual([false, true]);
+  });
+
+  it('a chave não pode ser gerada com check-in sem pagamento', async () => {
+    const fixture = TestBed.createComponent(AbaChave);
+    fixture.componentRef.setInput('torneio', { id: 1, status: 'INSCRICOES_ENCERRADAS' } as Torneio);
+    fixture.componentRef.setInput('linhas', []);
+    fixture.componentRef.setInput('confirmados', 3);
+    fixture.componentRef.setInput('semPagamento', ['@lucassz']);
+    await fixture.whenStable();
+    const tela = fixture.nativeElement as HTMLElement;
+    const gerar = () =>
+      [...tela.querySelectorAll('button')].find((botao) =>
+        botao.textContent?.includes('Sortear e gerar chave'),
+      ) as HTMLButtonElement;
+
+    expect(tela.textContent).toContain('Pagamento pendente de @lucassz');
+    expect(gerar().disabled).toBe(true);
+
+    fixture.componentRef.setInput('semPagamento', []);
+    await fixture.whenStable();
+    expect(gerar().disabled).toBe(false);
   });
 });

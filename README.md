@@ -53,6 +53,7 @@ O backend já aceita requisições de `http://localhost:*` (CORS). Para publicar
   - linha do tempo das fases e ações de status permitidas pelo backend;
   - aba Inscrições: check-in, situação do pagamento, ausência, cancelamento e inscrição manual por nickname;
   - aba Chave: geração da chave (com checklist de requisitos) e desenho da chave eliminatória, com lançamento de placar, W.O., desempate e correção de resultado;
+  - **regra de pagamento:** a plataforma não processa pagamentos. O jogador paga na loja e a equipe marca a inscrição como paga; só faz check-in e entra na chave quem está com pagamento **Pago** ou **Isento** (torneios gratuitos já nascem isentos). Ao fazer o check-in de um jogador pendente, o painel pede a confirmação do recebimento e grava pagamento e check-in juntos. A mesma regra é aplicada no backend;
   - aba Resultados: pódio e registro do prêmio entregue.
 - **Eventos:** criação, edição, mudança de status e lista de presenças confirmadas.
 - **Equipe:** inclusão de membros por nickname, troca de papel (proprietário, organizador, juiz) e desativação.
