@@ -6,7 +6,7 @@
 // Enums
 // ---------------------------------------------------------------------------
 
-export type TipoConta = 'LOJA' | 'JOGADOR' | 'ADMIN';
+export type TipoConta = 'LOJA' | 'JOGADOR' | 'ADMIN' | 'FUNCIONARIO';
 
 export type PapelMembro = 'PROPRIETARIO' | 'ORGANIZADOR' | 'JUIZ';
 
@@ -45,6 +45,7 @@ export type TipoNotificacao =
   | 'TORNEIO_INICIADO'
   | 'RODADA_INICIADA'
   | 'PAREAMENTO'
+  | 'CHECK_IN_SOLICITADO'
   | 'RESULTADO_REGISTRADO'
   | 'TORNEIO_FINALIZADO'
   | 'EVENTO_ATUALIZADO'
@@ -85,6 +86,8 @@ export interface LoginResponse {
   nome: string | null;
   nickname: string | null;
   imagemPerfil: string | null;
+  // Preenchido apenas para FUNCIONARIO: indica o painel de qual loja abrir
+  lojaId: number | null;
 }
 
 // POST /auth/registro/loja. Slug vazio = gerado a partir do nome.

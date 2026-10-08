@@ -5,7 +5,7 @@ Aplicação web do TopDeck, construída em Angular 21. Reúne três áreas:
 | Área | Rotas | Acesso | Finalidade |
 |---|---|---|---|
 | Site | `/home`, `/jogos`, `/torneios`, `/preco`, `/quem-somos`, `/login`, `/cadastro` | Público | Apresentar a plataforma e cadastrar lojas |
-| Painel da loja | `/painel` | Conta `LOJA` | Criar e conduzir torneios e eventos, gerenciar equipe e perfil |
+| Painel da loja | `/painel` | Conta `LOJA` ou `FUNCIONARIO` | Criar e conduzir torneios e eventos, gerenciar equipe e perfil |
 | Admin geral | `/admin` | Conta `ADMIN` | Administrar contas, lojas, catálogo e a saúde da plataforma |
 
 Jogadores usam o app mobile (`TCG-front-mobile`). O que a loja faz no painel chega ao app pelo backend (`TCGBackend`).
@@ -26,6 +26,7 @@ Na tela `/login`, o modo demonstração oferece atalhos para estas contas (as me
 | Perfil | Email | Senha | Destino |
 |---|---|---|---|
 | Loja (Card House) | `contato@cardhouse.com.br` | `123456` | `/painel` |
+| Loja (Dragon's Lair) | `contato@dragonslair.com.br` | `123456` | `/painel` |
 | Administrador | `admin@tcg.com` | `admin123` | `/admin` |
 | Jogador | `eric@email.com` | `123456` | Acesso recusado (jogadores usam o app) |
 
@@ -37,7 +38,15 @@ A origem dos dados é definida em `src/app/core/configuracao.ts`:
 |---|---|
 | `usarMockApi` | `true` (padrão): as telas usam dados de exemplo, sem backend. Leituras e login funcionam; operações de gravação retornam erro 503 indicando que é necessária a API. `false`: as chamadas vão para o TCGBackend. |
 | `apiUrl` | Endereço do backend (`http://localhost:8080` em desenvolvimento). |
-| `tiposDeContaPermitidos` | Tipos de conta aceitos no sistema web (`LOJA` e `ADMIN`). |
+| `tiposDeContaPermitidos` | Tipos de conta aceitos no sistema web: `LOJA`, `ADMIN` e `FUNCIONARIO`. |
+
+### Isolamento SaaS
+
+Cada loja acessa apenas seus próprios dados. A função `idDaLojaLogada()` em `src/app/painel/loja-atual.ts` retorna:
+- O `conta.id` quando o tipo é `LOJA`.
+- O `conta.lojaId` (recebido no login) quando o tipo é `FUNCIONARIO`.
+
+Isso garante que um funcionário de uma loja não enxerga os dados de outra, mesmo usando a mesma rota de painel.
 
 Os services fazem as mesmas chamadas HTTP nos dois modos; no modo demonstração, um interceptor responde no lugar da API com o mesmo formato de JSON. Os painéis exibem a etiqueta "Modo demonstração" enquanto o mock está ativo.
 
@@ -56,7 +65,8 @@ O backend já aceita requisições de `http://localhost:*` (CORS). Para publicar
   - **regra de pagamento:** a plataforma não processa pagamentos. O jogador paga na loja e a equipe marca a inscrição como paga; só faz check-in e entra na chave quem está com pagamento **Pago** ou **Isento** (torneios gratuitos já nascem isentos). Ao fazer o check-in de um jogador pendente, o painel pede a confirmação do recebimento e grava pagamento e check-in juntos. A mesma regra é aplicada no backend;
   - aba Resultados: pódio e registro do prêmio entregue.
 - **Eventos:** criação, edição, mudança de status e lista de presenças confirmadas.
-- **Equipe:** inclusão de membros por nickname, troca de papel (proprietário, organizador, juiz) e desativação.
+- **Equipe:** inclusão de membros por nickname, troca de papel (proprietário, organizador, juiz) e desativação. O proprietário também pode criar **contas de funcionário** (`FUNCIONARIO`) diretamente pelo painel — o sistema cria a conta e o vínculo de uma só vez.
+- **Check-in de partida:** botão **Convocar** em cada partida da chave. Ao acionar, o backend abre uma janela de 5 minutos e notifica os dois jogadores no app mobile para confirmarem presença.
 - **Perfil da loja:** dados, imagens, endereço e situação da verificação, com prévia.
 - **Notificações** e **Segurança** (troca de senha).
 
@@ -129,4 +139,4 @@ Para retorno ao usuário, use `Avisos` (mensagens de sucesso e erro), `Confirmac
 - **Planos e assinaturas:** o backend ainda não possui esse módulo. A tela usa dados de exemplo e apresenta o modelo de tabelas e rotas sugerido.
 - **Avisos em massa:** a API cria uma notificação por conta; o admin envia uma requisição por destinatário.
 - **Imagens de loja, torneio e evento:** aceitas apenas por URL; o upload de arquivo existe somente para a foto do jogador.
-- **Equipe da loja:** membros com conta de jogador ainda não acessam o painel; falta no backend uma rota que liste as lojas de um membro.
+- **Equipe da loja (membros com conta JOGADOR):** ainda não acessam o painel; falta no backend uma rota que liste as lojas de um membro. Contas `FUNCIONARIO` (criadas pelo proprietário) já funcionam.

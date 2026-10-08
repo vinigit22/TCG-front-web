@@ -4,13 +4,13 @@ export const configuracao = {
   // true (padrão): o painel responde com os dados de exemplo de core/mocks (os mesmos do data.sql do
   // backend), sem chamar a API. Só as consultas e o login funcionam; as alterações pedem a API.
   // false: os services chamam o TCGBackend em apiUrl.
-  usarMockApi: true,
+  usarMockApi: false,
 
   // Endereço do TCGBackend. Em desenvolvimento: ./mvnw spring-boot:run (perfil H2, porta 8080).
   apiUrl: 'http://localhost:8080',
 
-  // O painel web é das lojas e do administrador. Jogadores usam o app mobile.
-  tiposDeContaPermitidos: ['LOJA', 'ADMIN'] as TipoConta[],
+  // O painel web é das lojas, funcionários e do administrador. Jogadores usam o app mobile.
+  tiposDeContaPermitidos: ['LOJA', 'ADMIN', 'FUNCIONARIO'] as TipoConta[],
 };
 
 // Monta a URL completa de uma rota da API ("/torneios" -> "http://localhost:8080/torneios")

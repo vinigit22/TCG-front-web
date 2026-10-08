@@ -1,7 +1,10 @@
 import { inject } from '@angular/core';
 import { SessaoService } from '../core/services/sessao.service';
 
-// Na conta LOJA, o id da conta é o id da loja (/lojas/{id}). O tipoContaGuard garante a sessão.
+// Para LOJA: id da conta = id da loja.
+// Para FUNCIONARIO: lojaId vem da resposta de login (a qual loja pertence).
 export function idDaLojaLogada(): number {
-  return inject(SessaoService).conta()?.id ?? 0;
+  const conta = inject(SessaoService).conta();
+  if (!conta) return 0;
+  return conta.tipo === 'FUNCIONARIO' ? (conta.lojaId ?? 0) : conta.id;
 }

@@ -2,15 +2,56 @@
   <header class="pagina-cabecalho">
     <div>
       <h1>Equipe</h1>
-      <p>Quem ajuda a organizar a loja. Cada membro entra com a própria conta do app.</p>
+      <p>Gerencie membros existentes ou crie contas de funcionário que acessam apenas este painel.</p>
     </div>
     <div class="pagina-acoes">
+      <button type="button" class="btn btn-secundario" (click)="formFuncionarioAberto.set(!formFuncionarioAberto())">
+        <app-icone nome="usuario-mais" [tamanho]="16" />
+        Criar funcionário
+      </button>
       <button type="button" class="btn btn-primario" (click)="buscaAberta.set(true)">
         <app-icone nome="usuario-mais" [tamanho]="16" />
         Adicionar membro
       </button>
     </div>
   </header>
+
+  @if (formFuncionarioAberto()) {
+    <section class="cartao">
+      <div class="cartao-corpo">
+        <h2 style="font-size:1rem;margin-bottom:1rem">Novo funcionário</h2>
+        <p style="font-size:.85rem;color:var(--texto-2);margin-bottom:1rem">
+          Cria uma conta exclusiva para o painel web. O funcionário não acessa o app mobile.
+        </p>
+        <div class="form-grade" style="gap:.75rem">
+          <label class="campo">
+            <span class="campo-rotulo">E-mail</span>
+            <input class="controle" type="email" [(ngModel)]="funcEmail" name="funcEmail" autocomplete="off" />
+          </label>
+          <label class="campo">
+            <span class="campo-rotulo">Senha inicial</span>
+            <input class="controle" type="password" [(ngModel)]="funcSenha" name="funcSenha" autocomplete="new-password" />
+          </label>
+          <label class="campo">
+            <span class="campo-rotulo">Papel</span>
+            <select class="controle" [(ngModel)]="funcPapel" name="funcPapel">
+              <option value="ORGANIZADOR">Organizador</option>
+              <option value="JUIZ">Juiz</option>
+            </select>
+          </label>
+        </div>
+        @if (erroFuncionario()) {
+          <p class="aviso aviso-erro" style="margin-top:.75rem">{{ erroFuncionario() }}</p>
+        }
+        <div style="display:flex;gap:.5rem;margin-top:1rem">
+          <button class="btn btn-primario" (click)="criarFuncionario()" [disabled]="criandoFuncionario()">
+            Criar conta
+          </button>
+          <button class="btn btn-neutro" (click)="formFuncionarioAberto.set(false)">Cancelar</button>
+        </div>
+      </div>
+    </section>
+  }
 
   <div class="papeis">
     @for (item of papeis; track item.papel) {

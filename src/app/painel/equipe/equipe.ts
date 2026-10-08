@@ -68,6 +68,14 @@ export class Equipe {
   protected readonly ocupado = signal<number | null>(null);
   protected papelNovo: PapelMembro = 'ORGANIZADOR';
 
+  // Formulário de criar funcionário
+  protected readonly formFuncionarioAberto = signal(false);
+  protected readonly criandoFuncionario = signal(false);
+  protected readonly erroFuncionario = signal<string | null>(null);
+  protected funcEmail = '';
+  protected funcSenha = '';
+  protected funcPapel: 'ORGANIZADOR' | 'JUIZ' = 'ORGANIZADOR';
+
   private readonly perfis = computed(
     () => new Map((this.jogadores.dados() ?? []).map((jogador) => [jogador.contaId, jogador])),
   );
@@ -136,6 +144,31 @@ export class Equipe {
           this.ocupado.set(null);
           this.avisos.erro(falha);
           this.membros.recarregar();
+        },
+      });
+  }
+
+  protected criarFuncionario(): void {
+    if (!this.funcEmail.trim() || !this.funcSenha.trim()) {
+      this.erroFuncionario.set('Preencha e-mail e senha.');
+      return;
+    }
+    this.erroFuncionario.set(null);
+    this.criandoFuncionario.set(true);
+    this.servico
+      .criarFuncionario(this.lojaId, { email: this.funcEmail.trim(), senha: this.funcSenha, papel: this.funcPapel })
+      .subscribe({
+        next: () => {
+          this.criandoFuncionario.set(false);
+          this.formFuncionarioAberto.set(false);
+          this.funcEmail = '';
+          this.funcSenha = '';
+          this.avisos.sucesso('Funcionário criado', 'A conta já pode ser usada para acessar o painel.');
+          this.membros.recarregar();
+        },
+        error: (falha: unknown) => {
+          this.criandoFuncionario.set(false);
+          this.avisos.erro(falha, 'Não foi possível criar o funcionário');
         },
       });
   }

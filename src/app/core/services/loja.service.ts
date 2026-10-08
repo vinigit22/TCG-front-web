@@ -57,4 +57,9 @@ export class LojaService {
   removerMembro(id: number): Observable<void> {
     return this.http.delete<void>(urlApi(`/loja-membros/${id}`));
   }
+
+  // Cria uma conta FUNCIONARIO vinculada à loja. Retorna o LojaMembro criado.
+  criarFuncionario(lojaId: number, dados: { email: string; senha: string; papel: string }): Observable<LojaMembro> {
+    return this.http.post<LojaMembro>(urlApi(`/lojas/${lojaId}/funcionarios`), dados);
+  }
 }
