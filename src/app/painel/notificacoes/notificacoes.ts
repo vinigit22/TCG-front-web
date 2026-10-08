@@ -19,6 +19,7 @@ const ICONE: Record<TipoNotificacao, NomeIcone> = {
   EVENTO_ATUALIZADO: 'calendario',
   TORNEIO_CANCELADO: 'cancelar',
   AVISO_GERAL: 'megafone',
+  CHECK_IN_SOLICITADO: 'check',
 };
 
 @Component({

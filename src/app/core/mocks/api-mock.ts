@@ -83,6 +83,7 @@ function login(corpo: { email?: string; senha?: string }): LoginResponse {
     nome: perfil.nome,
     nickname: perfil.nickname,
     imagemPerfil: null,
+    lojaId: null,
   };
 }
 

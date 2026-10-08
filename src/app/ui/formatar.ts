@@ -53,12 +53,14 @@ export const TOM_TIPO_CONTA: Record<TipoConta, Tom> = {
   LOJA: 'roxo',
   JOGADOR: 'verde',
   ADMIN: 'ambar',
+  FUNCIONARIO: 'azul',
 };
 
 export const ROTULO_TIPO_CONTA: Record<TipoConta, string> = {
   LOJA: 'Loja',
   JOGADOR: 'Jogador',
   ADMIN: 'Admin',
+  FUNCIONARIO: 'Funcionario',
 };
 
 // "Card House" -> "CH"; "ericabreu" -> "ER"
