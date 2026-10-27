@@ -17,7 +17,7 @@ import { porcentagem } from './formatar';
       >
         <div class="medidor-preenchimento" [style.width.%]="pct()"></div>
       </div>
-      <span class="medidor-texto">{{ ocupadas() }}/{{ total() }}</span>
+      <span class="medidor-texto">{{ texto() }}</span>
     </div>
   `,
 })
@@ -25,6 +25,12 @@ export class Medidor {
   readonly ocupadas = input.required<number>();
   readonly total = input.required<number>();
   readonly rotulo = input('Vagas ocupadas');
+  // "vagas" -> "4/16 vagas" (página Torneios do site, como no app)
+  readonly sufixo = input('');
+
+  protected readonly texto = computed(() =>
+    [`${this.ocupadas()}/${this.total()}`, this.sufixo()].filter(Boolean).join(' '),
+  );
 
   protected readonly pct = computed(() => porcentagem(this.ocupadas(), this.total()));
   protected readonly cheio = computed(() => this.total() > 0 && this.ocupadas() >= this.total());

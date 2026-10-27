@@ -2,24 +2,72 @@
   <h1 class="torneios-titulo">TORNEIOS</h1>
   <p class="torneios-subtitulo">Encontre e inscreva-se nos próximos torneios</p>
 
-  <div class="torneios-lista">
-    <div class="torneio-card">
-      <div class="torneio-jogo-tag">Magic: The Gathering</div>
-      <h3 class="torneio-nome">Standard Semanal</h3>
-      <div class="torneio-info">
-        <span>Card House</span>
-        <span>05 Set 2026 · 19h</span>
-      </div>
-      <div class="torneio-detalhes">
-        <span class="torneio-chip">4/4 vagas</span>
-        <span class="torneio-chip">R$ 25</span>
-        <span class="torneio-status status-encerrado">Inscrições Encerradas</span>
-      </div>
-    </div>
+  @if (jogo()) {
+    <p class="torneios-filtro">
+      Torneios de <strong>{{ nomeDoJogo() }}</strong> ·
+      <a routerLink="/torneios">ver todos os jogos</a>
+    </p>
+  }
 
-    <div class="torneios-vazio">
-      <p>Nenhum torneio aberto no momento.</p>
-      <p>Cadastre sua loja para criar torneios!</p>
-    </div>
+  <div class="torneios-lista">
+    @if (torneios.erro()) {
+      <div class="torneios-vazio">
+        <p>Não foi possível carregar os torneios.</p>
+        <button type="button" class="btn btn-secundario" (click)="torneios.recarregar()">
+          Tentar de novo
+        </button>
+      </div>
+    } @else if (torneios.dados() === undefined) {
+      @for (item of [1, 2]; track item) {
+        <div class="torneio-card carregando" aria-hidden="true"></div>
+      }
+    } @else {
+      <!-- O mesmo cartão do app (TCG-front-mobile/src/components/torneioCard.tsx) -->
+      @for (torneio of visiveis(); track torneio.id) {
+        <article class="torneio-card">
+          <div class="torneio-topo">
+            <span class="torneio-jogo-tag">{{ torneio.jogo.nome }}</span>
+            <app-selo-torneio [status]="torneio.status" />
+          </div>
+          <h3 class="torneio-nome">{{ torneio.titulo }}</h3>
+          <div class="torneio-info">
+            <span>
+              <app-icone nome="loja" [tamanho]="15" />
+              {{ torneio.loja.nome }}
+              @if (torneio.loja.verificada) {
+                <app-icone nome="verificado" [tamanho]="15" class="verificada" title="Loja verificada" />
+              }
+            </span>
+            <span><app-icone nome="calendario" [tamanho]="15" /> {{ dataCurta(torneio.dataInicio) }}</span>
+            @if (cidade(torneio); as local) {
+              <span><app-icone nome="local" [tamanho]="15" /> {{ local }}</span>
+            }
+          </div>
+          <div class="torneio-detalhes">
+            <span class="torneio-chip">{{ taxa(torneio.taxaInscricao) }}</span>
+            @if (torneio.formato) {
+              <span class="torneio-chip">{{ torneio.formato.nome }}</span>
+            }
+            @if (torneio.premiacao) {
+              <span class="torneio-chip"
+                ><app-icone nome="trofeu" [tamanho]="14" /> {{ torneio.premiacao }}</span
+              >
+            }
+          </div>
+          <div class="torneio-rodape">
+            <app-medidor
+              [ocupadas]="ocupadas(torneio)"
+              [total]="torneio.vagasMax"
+              sufixo="vagas"
+            />
+          </div>
+        </article>
+      } @empty {
+        <div class="torneios-vazio">
+          <p>Nenhum torneio aberto no momento.</p>
+          <p><a routerLink="/cadastro">Cadastre sua loja</a> para criar torneios!</p>
+        </div>
+      }
+    }
   </div>
 </section>

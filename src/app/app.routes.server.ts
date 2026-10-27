@@ -7,6 +7,9 @@ export const serverRoutes: ServerRoute[] = [
   { path: 'painel/**', renderMode: RenderMode.Client },
   { path: 'admin', renderMode: RenderMode.Client },
   { path: 'admin/**', renderMode: RenderMode.Client },
-  // Páginas públicas: geradas no build
+  // Páginas públicas que leem a API: carregam os dados no navegador (no build não há dados atuais)
+  { path: 'torneios', renderMode: RenderMode.Client },
+  { path: 'jogos', renderMode: RenderMode.Client },
+  // Demais páginas públicas: geradas no build
   { path: '**', renderMode: RenderMode.Prerender },
 ];

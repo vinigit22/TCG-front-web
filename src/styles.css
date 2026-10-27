@@ -901,6 +901,10 @@ select.controle {
   background: var(--ambar-500);
 }
 
+.medidor.cheio .medidor-texto {
+  color: var(--ambar-700);
+}
+
 .medidor-texto {
   font-size: 0.78rem;
   font-weight: 600;

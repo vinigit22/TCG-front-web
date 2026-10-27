@@ -1,31 +1,55 @@
 <section class="jogos-page">
   <h1 class="jogos-titulo">JOGOS SUPORTADOS</h1>
   <p class="jogos-subtitulo">Organize torneios dos maiores jogos de cartas</p>
-  <div class="jogos-grid">
-    <div class="jogo-card">
-      <img src="/imagens/jogo1.png" alt="Pokémon TCG" class="jogo-logo">
-      <h3>Pokémon TCG</h3>
-      <p>Standard · Expandido</p>
+
+  @if (jogos.erro()) {
+    <div class="jogos-estado">
+      <p>Não foi possível carregar os jogos.</p>
+      <button type="button" class="btn btn-secundario" (click)="jogos.recarregar()">
+        Tentar de novo
+      </button>
     </div>
-    <div class="jogo-card">
-      <img src="/imagens/jogo2.png" alt="Yu-Gi-Oh!" class="jogo-logo">
-      <h3>Yu-Gi-Oh!</h3>
-      <p>Advanced</p>
+  } @else {
+    <div class="jogos-grid">
+      @if (jogos.dados() === undefined) {
+        @for (item of [1, 2, 3, 4, 5]; track item) {
+          <div class="jogo-card carregando" aria-hidden="true"></div>
+        }
+      }
+      @for (cartao of cartoes(); track cartao.jogo.id) {
+        @if (cartao.jogo.ativo) {
+          <a
+            class="jogo-card"
+            routerLink="/torneios"
+            [queryParams]="{ jogo: cartao.jogo.slug }"
+            [attr.aria-label]="'Ver torneios de ' + cartao.jogo.nome"
+          >
+            <ng-container *ngTemplateOutlet="conteudo; context: { $implicit: cartao }" />
+          </a>
+        } @else {
+          <div class="jogo-card em-breve">
+            <ng-container *ngTemplateOutlet="conteudo; context: { $implicit: cartao }" />
+          </div>
+        }
+      }
     </div>
-    <div class="jogo-card">
-      <img src="/imagens/jogo3.png" alt="One Piece Card Game" class="jogo-logo">
-      <h3>One Piece</h3>
-      <p>Standard</p>
-    </div>
-    <div class="jogo-card">
-      <img src="/imagens/jogo4.png" alt="Magic: The Gathering" class="jogo-logo">
-      <h3>Magic: The Gathering</h3>
-      <p>Standard · Modern · Commander · Pauper</p>
-    </div>
-    <div class="jogo-card">
-      <img src="/imagens/jogo5.png" alt="Lorcana" class="jogo-logo">
-      <h3>Lorcana</h3>
-      <p>Em breve</p>
-    </div>
-  </div>
+  }
 </section>
+
+<ng-template #conteudo let-cartao>
+  @if (cartao.logo) {
+    <img [src]="cartao.logo" [alt]="cartao.jogo.nome" class="jogo-logo" />
+  } @else {
+    <div class="jogo-logo jogo-sem-logo" aria-hidden="true">{{ sigla(cartao.jogo.nome) }}</div>
+  }
+  <h3>{{ cartao.jogo.nome }}</h3>
+  <p>
+    @if (!cartao.jogo.ativo) {
+      Em breve
+    } @else if (cartao.formatos.length) {
+      {{ cartao.formatos.join(' · ') }}
+    } @else {
+      Formato livre
+    }
+  </p>
+</ng-template>
