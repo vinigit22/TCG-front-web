@@ -156,12 +156,14 @@
   animation: pulsar 1.6s ease-in-out infinite;
 }
 
-.desempate {
+.desempate,
+.chamada {
   border-color: #f2c66d;
   box-shadow: 0 0 0 3px var(--ambar-100);
 }
 
-.desempate .estado {
+.desempate .estado,
+.chamada .estado {
   color: var(--ambar-700);
 }
 

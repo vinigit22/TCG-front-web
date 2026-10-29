@@ -66,7 +66,7 @@ O backend já aceita requisições de `http://localhost:*` (CORS). Para publicar
   - aba Resultados: pódio e registro do prêmio entregue.
 - **Eventos:** criação, edição, mudança de status e lista de presenças confirmadas.
 - **Equipe:** inclusão de membros por nickname, troca de papel (proprietário, organizador, juiz) e desativação. O proprietário também pode criar **contas de funcionário** (`FUNCIONARIO`) diretamente pelo painel — o sistema cria a conta e o vínculo de uma só vez.
-- **Check-in de partida:** botão **Convocar** em cada partida da chave. Ao acionar, o backend abre uma janela de 5 minutos e notifica os dois jogadores no app mobile para confirmarem presença.
+- **Check-in de partida:** ao clicar numa partida pronta da chave, o botão **Chamar jogadores** abre 5 minutos para os dois confirmarem presença na tela verde do app. A janela mostra quem já confirmou e a contagem regressiva (a chave se atualiza sozinha a cada 5 s). A partida **começa sozinha** quando os dois confirmam e só então aceita resultado. Se o prazo acabar, quem confirmou vence por W.O.; se ninguém confirmou, ninguém avança daquela mesa (na final, a loja chama de novo).
 - **Perfil da loja:** dados, imagens, endereço e situação da verificação, com prévia.
 - **Notificações** e **Segurança** (troca de senha).
 

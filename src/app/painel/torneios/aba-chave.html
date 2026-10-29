@@ -92,7 +92,8 @@
     }
     @if (interativa()) {
       <p class="dica">
-        <app-icone nome="info" [tamanho]="15" /> Clique numa partida para lançar o resultado.
+        <app-icone nome="info" [tamanho]="15" /> Clique numa partida para chamar os jogadores e
+        lançar o resultado.
       </p>
     }
   </div>
@@ -144,7 +145,55 @@
       </p>
     } @else if (!p.jogadorA || !p.jogadorB) {
       <p class="explica">Esta partida ainda espera os vencedores das partidas anteriores.</p>
+    } @else if (p.status === 'PRONTA') {
+      <p class="explica">
+        A partida só começa quando <strong>os dois</strong> jogadores confirmarem presença no app.
+        Quem não confirmar em 5 minutos perde por W.O.; se nenhum confirmar, ninguém avança desta
+        mesa.
+      </p>
+      @if (checkIn(); as ci) {
+        <ul class="checkin">
+          @for (lado of ['A', 'B']; track lado) {
+            @let confirmou = lado === 'A' ? p.checkInA : p.checkInB;
+            <li [class.ok]="confirmou">
+              <span class="marca">
+                <app-icone
+                  [nome]="confirmou ? 'check' : 'relogio'"
+                  [tamanho]="14"
+                  [traco]="2.6"
+                />
+              </span>
+              <span class="checkin-nome">&#64;{{ lado === 'A' ? p.jogadorA : p.jogadorB }}</span>
+              <span class="checkin-estado">
+                {{ confirmou ? 'Confirmou presença' : ci.chamados ? 'Aguardando' : 'Ainda não chamado' }}
+              </span>
+            </li>
+          }
+        </ul>
+        @if (ci.aberto) {
+          <p class="contagem">
+            <app-icone nome="relogio" [tamanho]="16" /> Prazo para confirmar:
+            <strong>{{ ci.tempo }}</strong>
+          </p>
+        } @else if (ci.chamados) {
+          <p class="contagem encerrado">
+            <app-icone nome="alerta" [tamanho]="16" />
+            @if (ehFinal()) {
+              Ninguém confirmou a final no prazo. A final precisa de um campeão: chame os
+              jogadores de novo.
+            } @else {
+              Prazo encerrado. Finalizando a partida…
+            }
+          </p>
+        }
+      }
     } @else {
+      @if (p.checkInA && p.checkInB) {
+        <p class="iniciada">
+          <app-icone nome="check" [tamanho]="15" [traco]="2.6" /> Os dois jogadores confirmaram
+          presença: a partida está em andamento.
+        </p>
+      }
       <form id="form-resultado" (ngSubmit)="registrar()">
         <div class="placar">
           @for (lado of ['A', 'B']; track lado) {
@@ -205,6 +254,23 @@
         >
           <app-icone nome="desfazer" [tamanho]="15" />
           Reabrir para corrigir
+        </button>
+      } @else if (p.status === 'PRONTA' && p.jogadorA && p.jogadorB) {
+        <button
+          type="button"
+          class="btn btn-primario"
+          [disabled]="checkIn()?.aberto"
+          [attr.aria-busy]="salvando()"
+          (click)="convocar()"
+        >
+          <app-icone nome="megafone" [tamanho]="15" />
+          {{
+            checkIn()?.aberto
+              ? 'Jogadores chamados'
+              : checkIn()?.chamados
+                ? 'Chamar de novo'
+                : 'Chamar jogadores'
+          }}
         </button>
       } @else if (!emDesempate() && p.jogadorA && p.jogadorB) {
         <button

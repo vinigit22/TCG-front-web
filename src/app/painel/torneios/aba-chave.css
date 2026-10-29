@@ -143,7 +143,7 @@
   color: #fff;
 }
 
-.campeao span {
+.campeao div span {
   display: block;
   font-size: 0.7rem;
   font-weight: 700;
@@ -166,6 +166,95 @@
 .explica {
   color: var(--cor-texto-2);
   line-height: 1.6;
+}
+
+/* Check-in dos jogadores (partida pronta, esperando os dois confirmarem no app) */
+.checkin {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.checkin li {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid var(--cor-borda-forte);
+  border-radius: 12px;
+  color: var(--cor-texto-3);
+}
+
+.checkin .marca {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--tinta-100);
+}
+
+.checkin-nome {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 700;
+  color: var(--cor-texto);
+}
+
+.checkin-estado {
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.checkin .ok {
+  border-color: var(--verde-400);
+  background: var(--verde-50);
+  color: var(--verde-800);
+}
+
+.checkin .ok .marca {
+  background: var(--verde-400);
+  color: var(--verde-950);
+}
+
+.contagem {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 1rem;
+  font-size: 0.875rem;
+  color: var(--cor-texto-2);
+}
+
+.contagem strong {
+  font-size: 1.15rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--cor-texto);
+}
+
+.contagem.encerrado {
+  color: var(--ambar-700);
+  font-weight: 600;
+}
+
+.iniciada {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+  padding: 0.6rem 0.85rem;
+  border-radius: 10px;
+  background: var(--verde-50);
+  color: var(--verde-800);
+  font-size: 0.8125rem;
+  font-weight: 600;
 }
 
 .placar {

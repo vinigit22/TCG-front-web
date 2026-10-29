@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { Chaveamento } from '../core/models/api';
-import { iniciais } from './formatar';
+import { iniciais, paraData } from './formatar';
 import { Icone } from './icone';
 
 interface RodadaVisual {
@@ -12,6 +12,12 @@ interface RodadaVisual {
 // Partida empatada que ainda espera o desempate (a chave precisa de um vencedor)
 export function aguardaDesempate(partida: Chaveamento): boolean {
   return partida.resultado === 'EMPATE' && partida.status !== 'FINALIZADA';
+}
+
+// Partida chamada pela loja: os jogadores ainda estão no prazo de 5 minutos para confirmar presença
+export function emCheckIn(partida: Chaveamento): boolean {
+  const expira = paraData(partida.checkInExpiraEm)?.getTime() ?? 0;
+  return partida.status === 'PRONTA' && expira > Date.now();
 }
 
 // Lado sem jogador numa partida já decidida = bye (avançou sem adversário)
@@ -62,16 +68,20 @@ export class ChaveVisual {
       case 'AGUARDANDO':
         return 'Aguardando';
       case 'PRONTA':
-        return 'Pronta';
+        return emCheckIn(partida)
+          ? `Check-in ${Number(partida.checkInA) + Number(partida.checkInB)}/2`
+          : 'Pronta';
       case 'EM_ANDAMENTO':
         return 'Ao vivo';
       case 'FINALIZADA':
+        if (partida.resultado === 'DUPLO_NO_SHOW') return 'Sem vencedor';
         return partida.resultado === 'WO_A' || partida.resultado === 'WO_B' ? 'W.O.' : 'Encerrada';
     }
   }
 
   protected classeEstado(partida: Chaveamento): string {
     if (aguardaDesempate(partida)) return 'desempate';
+    if (emCheckIn(partida)) return 'pronta chamada';
     return partida.status.toLowerCase();
   }
 

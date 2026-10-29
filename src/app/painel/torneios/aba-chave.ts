@@ -1,7 +1,9 @@
 import {
+  afterNextRender,
   ChangeDetectionStrategy,
   Component,
   computed,
+  DestroyRef,
   inject,
   input,
   output,
@@ -17,6 +19,7 @@ import { Avisos } from '../../ui/avisos';
 import { aguardaDesempate, ChaveVisual } from '../../ui/chave-visual';
 import { Confirmacao } from '../../ui/confirmacao';
 import { EstadoVazio } from '../../ui/estado-vazio';
+import { paraData } from '../../ui/formatar';
 import { Icone } from '../../ui/icone';
 import { Modal } from '../../ui/modal';
 
@@ -46,14 +49,34 @@ export class AbaChave {
   private readonly partidas = inject(PartidaService);
   private readonly avisos = inject(Avisos);
   private readonly confirmacao = inject(Confirmacao);
+  private readonly destroyRef = inject(DestroyRef);
 
   protected readonly minimo = MINIMO_CONFIRMADOS_PARA_CHAVE;
   protected readonly gerando = signal(false);
   protected readonly salvando = signal(false);
 
-  // Partida aberta na janela de resultado
-  protected readonly partida = signal<Chaveamento | null>(null);
+  // Partida aberta na janela. Vem sempre de `linhas`, que a tela recarrega sozinha durante o torneio:
+  // assim o check-in dos jogadores aparece na janela sem precisar fechá-la.
+  private readonly partidaId = signal<number | null>(null);
+  protected readonly partida = computed(() => {
+    const id = this.partidaId();
+    return id === null ? null : (this.linhas().find((linha) => linha.partidaId === id) ?? null);
+  });
   protected readonly modalAberto = computed(() => this.partida() !== null);
+
+  // Relógio da contagem regressiva do check-in (só anda com a janela aberta)
+  private readonly agora = signal(Date.now());
+  protected readonly checkIn = computed(() => {
+    const partida = this.partida();
+    if (!partida) return null;
+    const expira = paraData(partida.checkInExpiraEm)?.getTime() ?? 0;
+    const segundos = Math.max(0, Math.ceil((expira - this.agora()) / 1000));
+    return {
+      chamados: expira > 0,
+      aberto: segundos > 0,
+      tempo: `${Math.floor(segundos / 60)}:${String(segundos % 60).padStart(2, '0')}`,
+    };
+  });
   protected gamesA = 0;
   protected gamesB = 0;
   protected resultado: ResultadoPartida | null = null;
@@ -86,6 +109,15 @@ export class AbaChave {
   });
 
   protected readonly ehFinal = computed(() => this.partida()?.rodada === this.ultimaRodada());
+
+  constructor() {
+    afterNextRender(() => {
+      const relogio = setInterval(() => {
+        if (this.partidaId() !== null) this.agora.set(Date.now());
+      }, 1000);
+      this.destroyRef.onDestroy(() => clearInterval(relogio));
+    });
+  }
   protected readonly emDesempate = computed(() => {
     const partida = this.partida();
     return !!partida && aguardaDesempate(partida);
@@ -138,11 +170,32 @@ export class AbaChave {
     this.gamesA = partida.gamesA;
     this.gamesB = partida.gamesB;
     this.resultado = null;
-    this.partida.set(partida);
+    this.agora.set(Date.now());
+    this.partidaId.set(partida.partidaId);
   }
 
   protected fecharPartida(): void {
-    this.partida.set(null);
+    this.partidaId.set(null);
+  }
+
+  // Chama os dois jogadores: o app deles abre a tela verde de confirmação. A partida só começa quando
+  // os dois confirmam; passados 5 minutos, quem confirmou vence por W.O. (o backend faz isso sozinho).
+  protected convocar(): void {
+    const partida = this.partida();
+    if (!partida) return;
+    this.salvando.set(true);
+    this.partidas.convocar(partida.partidaId).subscribe({
+      next: () => {
+        this.salvando.set(false);
+        this.agora.set(Date.now());
+        this.avisos.sucesso('Jogadores chamados', 'Eles têm 5 minutos para confirmar presença no app.');
+        this.alterou.emit();
+      },
+      error: (falha: unknown) => {
+        this.salvando.set(false);
+        this.avisos.erro(falha, 'Não foi possível chamar os jogadores');
+      },
+    });
   }
 
   // O placar sugere o resultado (o usuário ainda pode trocar)
@@ -196,7 +249,7 @@ export class AbaChave {
     acao.subscribe({
       next: () => {
         this.salvando.set(false);
-        this.partida.set(null);
+        this.partidaId.set(null);
         this.avisos.sucesso(mensagem);
         this.alterou.emit();
       },

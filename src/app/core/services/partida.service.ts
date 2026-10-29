@@ -39,6 +39,12 @@ export class PartidaService {
     return this.http.put<Partida>(urlApi(`/partidas/${id}`), dados);
   }
 
+  // Chama os dois jogadores: abre 5 minutos para confirmarem presença no app. A partida só começa
+  // (e só aceita resultado, exceto W.O.) depois que os dois confirmam.
+  convocar(id: number): Observable<Partida> {
+    return this.http.post<Partida>(urlApi(`/partidas/${id}/convocar`), null);
+  }
+
   // Avança o vencedor; a final encerra o torneio. EMPATE deixa a partida aguardando o desempate.
   registrarResultado(id: number, dados: ResultadoPartidaRequest): Observable<Partida> {
     return this.http.post<Partida>(urlApi(`/partidas/${id}/resultado`), dados);

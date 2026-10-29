@@ -1,5 +1,13 @@
 import { CurrencyPipe, DatePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import {
+  afterNextRender,
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  DestroyRef,
+  inject,
+  signal,
+} from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { map } from 'rxjs';
@@ -68,6 +76,7 @@ export class DetalheTorneio {
   private readonly confirmacao = inject(Confirmacao);
   private readonly router = inject(Router);
   private readonly rota = inject(ActivatedRoute);
+  private readonly destroyRef = inject(DestroyRef);
 
   protected readonly id = Number(this.rota.snapshot.paramMap.get('id'));
   protected readonly torneio = recurso(
@@ -134,6 +143,18 @@ export class DetalheTorneio {
     const status = this.torneio.dados()?.status;
     return status === 'RASCUNHO' || status === 'CANCELADO';
   });
+
+  constructor() {
+    // Com a chave em andamento os jogadores confirmam presença e a loja registra resultados: a chave
+    // se atualiza sozinha a cada 5 s (check-in, partida iniciada, W.O. automático)
+    afterNextRender(() => {
+      const atualizacao = setInterval(() => {
+        const andamento = this.torneio.dados()?.status === 'EM_ANDAMENTO';
+        if (andamento && this.aba() === 'chave' && !document.hidden) this.chave.recarregar();
+      }, 5000);
+      this.destroyRef.onDestroy(() => clearInterval(atualizacao));
+    });
+  }
 
   protected abrirAba(aba: IdAba): void {
     this.router.navigate([], { queryParams: { aba }, replaceUrl: true });

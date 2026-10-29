@@ -143,6 +143,9 @@ describe('painéis (modo mock)', () => {
       resultado: null,
       vencedor: null,
       status: 'AGUARDANDO',
+      checkInExpiraEm: null,
+      checkInA: false,
+      checkInB: false,
       ...dados,
     });
     const fixture = TestBed.createComponent(ChaveVisual);

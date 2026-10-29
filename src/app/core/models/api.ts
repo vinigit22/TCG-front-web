@@ -357,6 +357,10 @@ export interface Chaveamento {
   resultado: ResultadoPartida | null;
   vencedor: string | null;
   status: StatusPartida;
+  // Check-in da partida: prazo da última convocação e quem já confirmou presença no app
+  checkInExpiraEm: string | null;
+  checkInA: boolean;
+  checkInB: boolean;
 }
 
 // ---------------------------------------------------------------------------
@@ -420,6 +424,10 @@ export interface Partida {
   observacao: string | null;
   iniciadaEm: string | null;
   finalizadaEm: string | null;
+  // Check-in dos jogadores: a partida só começa (EM_ANDAMENTO) quando os dois confirmam
+  checkInExpiraEm: string | null;
+  checkInAEm: string | null;
+  checkInBEm: string | null;
 }
 
 // PUT /partidas/{id}. Na chave gerada automaticamente só mesa e observacao podem mudar.
