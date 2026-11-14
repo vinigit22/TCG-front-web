@@ -33,6 +33,7 @@ export class Cadastro {
     }),
     telefone: new FormControl('', { nonNullable: true, validators: [Validators.maxLength(20)] }),
     descricao: new FormControl('', { nonNullable: true }),
+    aceite: new FormControl(false, { nonNullable: true, validators: [Validators.requiredTrue] }),
   });
   protected readonly enviando = signal(false);
   protected readonly erro = signal<string | null>(null);

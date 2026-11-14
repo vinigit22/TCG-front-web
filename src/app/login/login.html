@@ -48,6 +48,16 @@
           </button>
         </div>
 
+        <label class="aceite">
+          <input type="checkbox" formControlName="aceite" />
+          <span>
+            Li e aceito os
+            <a href="/docs/termosdeusotopdeck.pdf" target="_blank" rel="noopener noreferrer">Termos de Uso</a>
+            e a
+            <a href="/docs/politicaprivacidadetopdeck.pdf" target="_blank" rel="noopener noreferrer">Política de Privacidade</a>
+          </span>
+        </label>
+
         @if (erro()) {
           <p class="login-erro" role="alert">{{ erro() }}</p>
         }

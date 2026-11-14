@@ -150,3 +150,16 @@
   color: var(--roxo-600);
   font-weight: 700;
 }
+
+.aceite {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  font-size: 0.9rem;
+}
+
+.aceite input[type='checkbox'] {
+  width: auto;
+  margin-top: 0.2rem;
+}

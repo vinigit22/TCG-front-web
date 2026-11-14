@@ -57,6 +57,21 @@
         placeholder="Conte sobre sua loja..."
       ></textarea>
 
+      <div class="aceite">
+        <input id="aceite" type="checkbox" formControlName="aceite" />
+        <span>
+          Li e aceito os
+          <a href="/docs/termosdeusotopdeck.pdf" target="_blank" rel="noopener noreferrer">Termos de Uso</a>
+          e a
+          <a href="/docs/politicaprivacidadetopdeck.pdf" target="_blank" rel="noopener noreferrer">Política de Privacidade</a>
+        </span>
+      </div>
+      @if (form.controls.aceite.touched && form.controls.aceite.invalid) {
+        <span class="campo-erro">
+          Você precisa aceitar os Termos de Uso e a Política de Privacidade.
+        </span>
+      }
+
       @if (erro()) {
         <p class="cadastro-erro" role="alert">{{ erro() }}</p>
       }

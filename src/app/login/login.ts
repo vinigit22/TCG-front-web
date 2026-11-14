@@ -31,6 +31,10 @@ export class Login {
       validators: [Validators.required, Validators.email],
     }),
     senha: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
+    aceite: new FormControl(false, {
+      nonNullable: true,
+      validators: [Validators.requiredTrue],
+    }),
   });
   protected readonly entrando = signal(false);
   protected readonly erro = signal<string | null>(null);
@@ -51,19 +55,28 @@ export class Login {
   }
 
   protected preencher(conta: { email: string; senha: string }): void {
-    this.form.setValue({ email: conta.email, senha: conta.senha });
+    // patchValue: não exige todos os campos (o aceite continua como está)
+    this.form.patchValue({ email: conta.email, senha: conta.senha });
     this.erro.set(null);
   }
 
   protected entrar(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
-      this.erro.set('Informe o email e a senha.');
+      const { email, senha, aceite } = this.form.controls;
+      this.erro.set(
+        email.valid && senha.valid && aceite.invalid
+          ? 'Você precisa aceitar os Termos de Uso e a Política de Privacidade.'
+          : 'Informe o email e a senha.',
+      );
       return;
     }
     this.entrando.set(true);
     this.erro.set(null);
-    this.auth.login(this.form.getRawValue()).subscribe({
+
+    // Envia só email e senha para a API (o aceite é validação da tela)
+    const { email, senha } = this.form.getRawValue();
+    this.auth.login({ email, senha }).subscribe({
       next: (conta) => {
         const voltar = this.rota.snapshot.queryParamMap.get('voltar');
         const area = areaDaConta(conta.tipo);
