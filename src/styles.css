@@ -1029,6 +1029,13 @@ select.controle {
   flex: 1;
 }
 
+@media (max-width: 600px) {
+  .ferramentas .busca {
+    max-width: none;
+    flex-basis: 100%;
+  }
+}
+
 /* ----------------------------------------------------------------------------- Estados: carregando, vazio, aviso */
 
 .esqueleto {

@@ -141,6 +141,21 @@
   white-space: nowrap;
 }
 
+/* No celular as fases ficam em coluna: na horizontal os rótulos encostavam na bolinha seguinte */
+@media (max-width: 600px) {
+  .etapas {
+    flex-direction: column;
+    gap: 0.6rem;
+    padding: 1rem 1.25rem;
+  }
+  .etapas li {
+    min-width: 0;
+  }
+  .etapas li:not(:last-child)::after {
+    display: none;
+  }
+}
+
 .cancelado {
   margin: 0 1.5rem 1.25rem;
 }

@@ -159,12 +159,6 @@ h1 {
   transform: translateY(-10px) rotate(-2deg);
 }
 
-.estrela {
-  font-size: 4rem;
-  line-height: 1;
-  color: var(--roxo-950);
-}
-
 .carta-texto {
   font-family: var(--fonte-marca);
   font-size: 1.1rem;

@@ -42,6 +42,23 @@
   }
 }
 
+/* No celular o selo desce para baixo do nome, senão o título vira "Pokémon…" */
+@media (max-width: 480px) {
+  .torneios .lista-item {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: 0.85rem;
+    row-gap: 0.35rem;
+  }
+  .torneios .data-bloco {
+    grid-row: span 2;
+    align-self: start;
+  }
+  .torneios app-selo-torneio {
+    justify-content: flex-start;
+  }
+}
+
 .tarefas,
 .notificacao:first-child {
   margin-top: 0.6rem;
