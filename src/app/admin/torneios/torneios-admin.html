@@ -1,0 +1,157 @@
+<div class="pagina">
+  <header class="pagina-cabecalho">
+    <div>
+      <h1>Torneios</h1>
+      <p>
+        Todos os torneios de todas as lojas. Como admin você pode cancelar ou excluir um torneio com
+        problema.
+      </p>
+    </div>
+  </header>
+
+  <section class="cartao">
+    <div class="ferramentas barra">
+      <div class="controle-grupo busca">
+        <span class="controle-prefixo"><app-icone nome="busca" [tamanho]="16" /></span>
+        <input
+          class="controle"
+          type="search"
+          placeholder="Torneio ou loja"
+          aria-label="Buscar torneio"
+          [value]="busca()"
+          (input)="busca.set($any($event.target).value)"
+        />
+      </div>
+      <select
+        class="controle filtro"
+        aria-label="Fase"
+        [value]="status()"
+        (change)="status.set($any($event.target).value)"
+      >
+        <option value="todos">Todas as fases</option>
+        @for (opcao of opcoesStatus; track opcao) {
+          <option [value]="opcao">{{ rotuloStatus[opcao] }}</option>
+        }
+      </select>
+      <select
+        class="controle filtro"
+        aria-label="Loja"
+        (change)="lojaId.set(numero($any($event.target).value))"
+      >
+        <option value="">Todas as lojas</option>
+        @for (loja of lojas(); track loja[0]) {
+          <option [value]="loja[0]" [selected]="lojaId() === loja[0]">{{ loja[1] }}</option>
+        }
+      </select>
+      <select
+        class="controle filtro"
+        aria-label="Jogo"
+        (change)="jogoId.set(numero($any($event.target).value))"
+      >
+        <option value="">Todos os jogos</option>
+        @for (jogo of jogos(); track jogo[0]) {
+          <option [value]="jogo[0]">{{ jogo[1] }}</option>
+        }
+      </select>
+    </div>
+
+    @if (torneios.erro()) {
+      <app-estado-vazio
+        [erro]="true"
+        titulo="Não foi possível carregar os torneios"
+        [texto]="torneios.erro()!"
+      />
+    } @else if (torneios.dados() === undefined) {
+      <div class="cartao-corpo"><div class="esqueleto" style="height: 200px"></div></div>
+    } @else if (visiveis().length === 0) {
+      <app-estado-vazio icone="trofeu" titulo="Nenhum torneio com esses filtros" />
+    } @else {
+      <div class="tabela-envoltorio" [class.recarregando]="torneios.carregando()">
+        <table class="tabela">
+          <thead>
+            <tr>
+              <th>Torneio</th>
+              <th>Loja</th>
+              <th>Data</th>
+              <th>Fase</th>
+              <th>Vagas</th>
+              <th><span class="sr-only">Ações</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (torneio of visiveis(); track torneio.id) {
+              <tr>
+                <td>
+                  <strong class="titulo">{{ torneio.titulo }}</strong>
+                  <span class="sub"
+                    >{{ torneio.jogo.nome
+                    }}{{ torneio.formato ? ' · ' + torneio.formato.nome : '' }}</span
+                  >
+                </td>
+                <td>
+                  {{ torneio.loja.nome }}
+                  @if (torneio.loja.verificada) {
+                    <app-icone nome="verificado" [tamanho]="14" class="verificada" />
+                  }
+                </td>
+                <td class="data">{{ torneio.dataInicio | date: 'dd/MM/yyyy HH:mm' }}</td>
+                <td><app-selo-torneio [status]="torneio.status" /></td>
+                <td>
+                  <app-medidor [ocupadas]="torneio.vagasOcupadas ?? 0" [total]="torneio.vagasMax" />
+                </td>
+                <td class="acoes">
+                  <app-menu-acoes [pequeno]="true">
+                    <button type="button" role="menuitem" (click)="abrirChave(torneio)">
+                      <app-icone nome="chave" [tamanho]="16" />
+                      Ver chave
+                    </button>
+                    @if (podeCancelar(torneio)) {
+                      <button
+                        type="button"
+                        role="menuitem"
+                        class="perigo"
+                        (click)="cancelar(torneio)"
+                      >
+                        <app-icone nome="cancelar" [tamanho]="16" />
+                        Cancelar torneio
+                      </button>
+                    }
+                    <button type="button" role="menuitem" class="perigo" (click)="excluir(torneio)">
+                      <app-icone nome="lixeira" [tamanho]="16" />
+                      Excluir
+                    </button>
+                  </app-menu-acoes>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+</div>
+
+<app-modal
+  [aberto]="torneioChave() !== null"
+  (abertoChange)="!$event && torneioChave.set(null)"
+  [titulo]="torneioChave()?.titulo ?? ''"
+  [descricao]="
+    torneioChave()
+      ? torneioChave()!.loja.nome + ' · ' + rotuloStatus[torneioChave()!.status]
+      : undefined
+  "
+  [largo]="true"
+>
+  @if (chave.carregando()) {
+    <div class="esqueleto" style="height: 220px"></div>
+  } @else if ((chave.dados() ?? []).length === 0) {
+    <app-estado-vazio [compacto]="true" icone="chave" titulo="A chave ainda não foi gerada" />
+  } @else {
+    <app-chave-visual [linhas]="chave.dados() ?? []" />
+  }
+  <div rodape>
+    <button type="button" class="btn btn-secundario" (click)="torneioChave.set(null)">
+      Fechar
+    </button>
+  </div>
+</app-modal>

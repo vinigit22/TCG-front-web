@@ -1,0 +1,115 @@
+<section class="login-page">
+  <div class="login-container">
+    <aside class="login-lado" aria-hidden="true">
+      <p class="lado-kicker">PAINEL TOPDECK</p>
+      <h2>Recupere o acesso à sua conta.</h2>
+      <ul>
+        <li>Enviamos um código para o email cadastrado</li>
+        <li>O código vale por 30 minutos</li>
+        <li>Depois é só escolher uma senha nova</li>
+      </ul>
+    </aside>
+
+    <div class="login-form-area">
+      <h1 class="login-titulo">{{ etapa() === 'pronto' ? 'SENHA NOVA' : 'ESQUECI A SENHA' }}</h1>
+
+      @switch (etapa()) {
+        @case ('email') {
+          <p class="login-sub">
+            Informe o email da sua conta. Se ele estiver cadastrado, enviamos um código para redefinir a
+            senha.
+          </p>
+
+          <form class="login-form" [formGroup]="formEmail" (ngSubmit)="enviarEmail()" novalidate>
+            <label for="email">Email</label>
+            <input
+              type="email"
+              id="email"
+              formControlName="email"
+              placeholder="contato@loja.com"
+              autocomplete="username"
+            />
+
+            @if (erro()) {
+              <p class="login-erro" role="alert">{{ erro() }}</p>
+            }
+
+            <button type="submit" class="btn-entrar" [disabled]="enviando()">
+              {{ enviando() ? 'ENVIANDO…' : 'ENVIAR CÓDIGO' }}
+            </button>
+          </form>
+
+          <p class="login-link">
+            Já tem um código? <button type="button" (click)="irParaEtapa('codigo')">Informar código</button>
+          </p>
+        }
+
+        @case ('codigo') {
+          <p class="login-sub">Cole o código do email e escolha a nova senha.</p>
+
+          <div class="ja-logado" role="status">
+            <p>Se o email estiver cadastrado, o código já está a caminho. Ele vale por 30 minutos.</p>
+          </div>
+
+          <form class="login-form" [formGroup]="formRedefinir" (ngSubmit)="redefinir()" novalidate>
+            <label for="codigo">Código do email</label>
+            <textarea
+              id="codigo"
+              formControlName="codigo"
+              rows="3"
+              placeholder="Cole aqui o código inteiro"
+              autocomplete="off"
+              spellcheck="false"
+            ></textarea>
+
+            <label for="novaSenha">Nova senha</label>
+            <div class="senha">
+              <input
+                [type]="mostrarSenha() ? 'text' : 'password'"
+                id="novaSenha"
+                formControlName="novaSenha"
+                placeholder="••••••••"
+                autocomplete="new-password"
+              />
+              <button type="button" class="mostrar" (click)="mostrarSenha.set(!mostrarSenha())">
+                {{ mostrarSenha() ? 'Ocultar' : 'Mostrar' }}
+              </button>
+            </div>
+
+            <label for="confirmacao">Confirme a nova senha</label>
+            <input
+              [type]="mostrarSenha() ? 'text' : 'password'"
+              id="confirmacao"
+              formControlName="confirmacao"
+              placeholder="••••••••"
+              autocomplete="new-password"
+            />
+
+            @if (erro()) {
+              <p class="login-erro" role="alert">{{ erro() }}</p>
+            }
+
+            <button type="submit" class="btn-entrar" [disabled]="enviando()">
+              {{ enviando() ? 'SALVANDO…' : 'REDEFINIR SENHA' }}
+            </button>
+          </form>
+
+          <p class="login-link">
+            Não chegou? <button type="button" (click)="irParaEtapa('email')">Pedir um novo código</button>
+          </p>
+        }
+
+        @case ('pronto') {
+          <div class="ja-logado" role="status">
+            <p>Senha alterada com sucesso. Entre com a nova senha.</p>
+            <a routerLink="/login" class="btn-entrar">IR PARA O LOGIN</a>
+          </div>
+        }
+      }
+
+      @if (etapa() !== 'pronto') {
+        <p class="login-link"><a routerLink="/login">Voltar para o login</a></p>
+      }
+    </div>
+  </div>
+</section>

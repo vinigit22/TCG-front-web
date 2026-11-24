@@ -1,0 +1,136 @@
+<div class="pagina">
+  <header class="pagina-cabecalho">
+    <div>
+      <h1>Avisos</h1>
+      <p>
+        Mande um comunicado para lojas e jogadores. Ele aparece nas notificações do app e do painel.
+      </p>
+    </div>
+  </header>
+
+  @if (ultimoEnvio(); as envio) {
+    <div class="faixa" [class.faixa-verde]="!envio.falhas" [class.faixa-ambar]="envio.falhas">
+      <app-icone [nome]="envio.falhas ? 'alerta' : 'verificado'" />
+      <p>
+        <strong>"{{ envio.titulo }}"</strong> foi enviado para {{ envio.total - envio.falhas }} de
+        {{ envio.total }} contas.
+        @if (envio.falhas) {
+          {{ envio.falhas }} falharam (veja se a API está no ar em Sistema).
+        }
+      </p>
+    </div>
+  }
+
+  <div class="layout">
+    <form class="cartao" [formGroup]="form" (ngSubmit)="enviar()" novalidate>
+      <section class="secao-form">
+        <header>
+          <h2>Para quem</h2>
+          <p>Só contas ativas recebem.</p>
+        </header>
+        <div class="form-grade">
+          <fieldset class="campo inteiro">
+            <legend class="sr-only">Público</legend>
+            <div class="publicos">
+              @for (opcao of opcoes; track opcao.id) {
+                <label class="opcao">
+                  <input type="radio" formControlName="publico" [value]="opcao.id" />
+                  <span><app-icone [nome]="opcao.icone" [tamanho]="16" /> {{ opcao.rotulo }}</span>
+                </label>
+              }
+            </div>
+          </fieldset>
+          @if (valores().publico === 'UMA') {
+            <label class="campo inteiro">
+              <span class="campo-rotulo">Conta</span>
+              <select class="controle" formControlName="contaId">
+                <option [ngValue]="null" disabled>Escolha a conta</option>
+                @for (conta of ativas(); track conta.id) {
+                  <option [ngValue]="conta.id">
+                    {{ conta.email }} ({{ rotuloTipo[conta.tipo] }})
+                  </option>
+                }
+              </select>
+            </label>
+          }
+          <p class="inteiro alcance">
+            <app-icone nome="usuarios" [tamanho]="16" />
+            Vai para <b>{{ destinatarios().length }}</b>
+            {{ destinatarios().length === 1 ? 'conta' : 'contas' }}
+          </p>
+        </div>
+      </section>
+
+      <section class="secao-form">
+        <header>
+          <h2>Mensagem</h2>
+          <p>Curta e direta: ela aparece como notificação.</p>
+        </header>
+        <div class="form-grade">
+          <label class="campo inteiro">
+            <span class="campo-rotulo contador-campo">
+              Título
+              <span class="texto-3">{{ valores().titulo.length }}/150</span>
+            </span>
+            <input
+              class="controle"
+              formControlName="titulo"
+              maxlength="150"
+              placeholder="Ex.: Manutenção programada no domingo"
+            />
+            @if (erro('titulo', 'O título'); as mensagem) {
+              <span class="campo-erro">{{ mensagem }}</span>
+            }
+          </label>
+          <label class="campo inteiro">
+            <span class="campo-rotulo contador-campo">
+              Mensagem
+              <span class="texto-3">{{ valores().mensagem.length }}/500</span>
+            </span>
+            <textarea
+              class="controle"
+              formControlName="mensagem"
+              rows="5"
+              maxlength="500"
+              placeholder="O que muda, quando e o que a pessoa precisa fazer."
+            ></textarea>
+            @if (erro('mensagem', 'A mensagem'); as mensagem) {
+              <span class="campo-erro">{{ mensagem }}</span>
+            }
+          </label>
+        </div>
+      </section>
+
+      <footer class="cartao-rodape">
+        @if (enviando()) {
+          <span class="enviando"
+            >Enviando {{ progresso().enviados }} de {{ progresso().total }}…</span
+          >
+        }
+        <button
+          type="submit"
+          class="btn btn-primario"
+          [attr.aria-busy]="enviando()"
+          [disabled]="!destinatarios().length"
+        >
+          <app-icone nome="megafone" [tamanho]="16" />
+          Enviar aviso
+        </button>
+      </footer>
+    </form>
+
+    <aside class="previa" aria-label="Prévia da notificação">
+      <p class="previa-rotulo"><app-icone nome="olho" [tamanho]="15" /> Como chega no celular</p>
+      <div class="celular">
+        <div class="notificacao">
+          <span class="app-icone-mini"><app-icone nome="megafone" [tamanho]="14" /></span>
+          <div>
+            <p class="app-nome">TopDeck · agora</p>
+            <strong>{{ valores().titulo || 'Título do aviso' }}</strong>
+            <p>{{ valores().mensagem || 'A mensagem aparece aqui.' }}</p>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>

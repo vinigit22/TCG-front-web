@@ -1,0 +1,50 @@
+.papeis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 0.75rem;
+}
+
+.papel {
+  display: flex;
+  gap: 0.75rem;
+  padding: 1rem;
+  border-radius: var(--raio-lg);
+  border: 1px dashed var(--roxo-200);
+  background: var(--roxo-50);
+}
+
+.papel-icone {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--cor-superficie);
+  color: var(--roxo-600);
+  box-shadow: var(--sombra-xs);
+}
+
+.papel strong {
+  font-size: 0.9rem;
+}
+
+.papel p {
+  margin-top: 0.15rem;
+  font-size: 0.8125rem;
+  color: var(--cor-texto-2);
+}
+
+.papel-select {
+  height: 34px;
+  width: 160px;
+  font-size: 0.8125rem;
+}
+
+.inativo .pessoa {
+  opacity: 0.55;
+}
+
+.papel-novo {
+  margin-top: 1rem;
+}

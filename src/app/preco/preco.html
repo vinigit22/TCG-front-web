@@ -1,0 +1,28 @@
+<section class="preco-page">
+  <h1 class="preco-titulo">PLANOS</h1>
+  <p class="preco-subtitulo">Escolha o plano ideal para sua loja</p>
+
+  <div class="planos-grid">
+    @for (plano of planos; track plano.id) {
+      <div class="plano-card" [class.destaque]="!!plano.destaque">
+        @if (plano.destaque) {
+          <div class="plano-badge">{{ plano.destaque | uppercase }}</div>
+        }
+        <h2 class="plano-nome">{{ plano.nome | uppercase }}</h2>
+        <div class="plano-preco">
+          {{
+            plano.precoMensal ? (plano.precoMensal | currency: 'BRL' : 'symbol' : '1.0-0') : 'R$ 0'
+          }}<span>/mês</span>
+        </div>
+        <ul class="plano-features">
+          @for (recurso of plano.recursos; track recurso) {
+            <li>{{ recurso }}</li>
+          }
+        </ul>
+        <a routerLink="/cadastro" class="btn-plano" [class.btn-destaque]="!!plano.destaque">
+          {{ plano.precoMensal ? 'ASSINAR ' + (plano.nome | uppercase) : 'COMEÇAR GRÁTIS' }}
+        </a>
+      </div>
+    }
+  </div>
+</section>

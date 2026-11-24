@@ -1,0 +1,96 @@
+<a class="pular" href="#conteudo">Pular para o conteúdo</a>
+
+<div class="shell" [class.menu-aberto]="menuAberto()">
+  <aside class="lateral" id="menu-painel">
+    <div class="lateral-topo">
+      <a routerLink="/" class="marca-link" aria-label="TopDeck: ir para o site">
+        <app-marca [tamanho]="30" />
+      </a>
+      <span class="area" [class.admin]="tom() === 'admin'">
+        <app-icone [nome]="tom() === 'admin' ? 'escudo' : 'loja'" [tamanho]="13" [traco]="2.4" />
+        {{ area() }}
+      </span>
+    </div>
+
+    <nav class="lateral-nav" aria-label="Menu do painel">
+      @for (grupo of menu(); track $index) {
+        <div class="grupo">
+          @if (grupo.titulo) {
+            <p class="grupo-titulo">{{ grupo.titulo }}</p>
+          }
+          <ul>
+            @for (item of grupo.itens; track item.rota) {
+              <li>
+                <a
+                  [routerLink]="item.rota"
+                  routerLinkActive="ativo"
+                  [routerLinkActiveOptions]="{ exact: !!item.exato }"
+                  (click)="menuAberto.set(false)"
+                >
+                  <app-icone [nome]="item.icone" />
+                  <span class="rotulo">{{ item.rotulo }}</span>
+                  @if (item.contador) {
+                    <span class="contador-menu">{{ item.contador }}</span>
+                  }
+                </a>
+              </li>
+            }
+          </ul>
+        </div>
+      }
+    </nav>
+
+    <div class="lateral-rodape">
+      <span class="avatar avatar-sm" [class.ambar]="tom() === 'admin'">{{
+        iniciais(conta()?.nome)
+      }}</span>
+      <div class="usuario">
+        <strong class="truncar">{{ conta()?.nome }}</strong>
+        <span class="truncar">{{ conta()?.email }}</span>
+      </div>
+      <button type="button" class="sair" (click)="sair()" title="Sair">
+        <app-icone nome="sair" [tamanho]="17" />
+        <span class="sr-only">Sair</span>
+      </button>
+    </div>
+  </aside>
+
+  <div class="fundo-menu" (click)="menuAberto.set(false)"></div>
+
+  <div class="principal">
+    <header class="topo">
+      <button
+        type="button"
+        class="btn btn-fantasma btn-icone menu-botao"
+        aria-controls="menu-painel"
+        [attr.aria-expanded]="menuAberto()"
+        (click)="menuAberto.set(true)"
+      >
+        <app-icone nome="menu" />
+        <span class="sr-only">Abrir menu</span>
+      </button>
+      <div class="topo-espaco"></div>
+      @if (modoMock) {
+        <span
+          class="modo-demo"
+          title="As consultas usam os dados de exemplo; salvar precisa da API (core/configuracao.ts: usarMockApi = false)"
+        >
+          <span class="ponto"></span>
+          Modo demonstração
+        </span>
+      }
+      <ng-content select="[topo]" />
+      <a routerLink="/" class="btn btn-fantasma btn-sm ver-site">
+        <app-icone nome="externo" [tamanho]="15" />
+        Ver site
+      </a>
+    </header>
+
+    <main class="conteudo" id="conteudo" tabindex="-1">
+      <ng-content />
+    </main>
+  </div>
+</div>
+
+<app-avisos />
+<app-confirmacao />

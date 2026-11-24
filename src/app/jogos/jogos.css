@@ -1,0 +1,133 @@
+.jogos-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 4rem 2rem 5rem;
+}
+
+.jogos-titulo {
+  font-family: var(--fonte-marca);
+  font-weight: 400;
+  color: var(--roxo-900);
+  text-align: center;
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  letter-spacing: 0.03em;
+}
+
+.jogos-subtitulo {
+  margin: 0.6rem 0 3rem;
+  text-align: center;
+  color: var(--cor-texto-2);
+  font-size: 1.05rem;
+}
+
+.jogos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 1.25rem;
+}
+
+.jogo-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.75rem 1.25rem 1.5rem;
+  border-radius: 20px;
+  background: var(--cor-superficie);
+  border: 1px solid var(--cor-borda);
+  box-shadow: var(--sombra-xs);
+  text-align: center;
+  transition:
+    border-color var(--transicao),
+    transform var(--transicao),
+    box-shadow var(--transicao);
+}
+
+a.jogo-card {
+  color: inherit;
+  text-decoration: none;
+}
+
+.jogo-card:hover {
+  border-color: var(--roxo-200);
+  transform: translateY(-4px);
+  box-shadow: 0 18px 36px -18px rgb(108 76 224 / 0.45);
+}
+
+.jogo-logo {
+  width: 100%;
+  height: 90px;
+  object-fit: contain;
+}
+
+.jogo-card h3 {
+  font-family: var(--fonte-marca);
+  font-weight: 400;
+  color: var(--roxo-900);
+  font-size: 0.85rem;
+  letter-spacing: 0.03em;
+}
+
+/* Jogo sem logo cadastrado: iniciais no lugar da imagem */
+.jogo-sem-logo {
+  display: grid;
+  place-items: center;
+  width: 90px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, var(--roxo-500), var(--verde-400));
+  color: #fff;
+  font-family: var(--fonte-marca);
+  font-size: 1.6rem;
+}
+
+/* Jogo desativado no catálogo */
+.jogo-card.em-breve {
+  border-style: dashed;
+}
+
+.jogo-card.em-breve:hover {
+  transform: none;
+  box-shadow: var(--sombra-xs);
+  border-color: var(--cor-borda);
+}
+
+.jogo-card.em-breve .jogo-logo {
+  opacity: 0.6;
+}
+
+.jogo-card.em-breve p {
+  background: var(--ambar-100);
+  color: var(--ambar-700);
+}
+
+.jogo-card.carregando {
+  height: 210px;
+  background: linear-gradient(
+    90deg,
+    var(--tinta-100) 25%,
+    var(--tinta-50) 50%,
+    var(--tinta-100) 75%
+  );
+  background-size: 200% 100%;
+  animation: brilho 1.4s ease infinite;
+}
+
+.jogos-estado {
+  padding: 3rem 1rem;
+  text-align: center;
+  color: var(--cor-texto-3);
+}
+
+.jogos-estado .btn {
+  margin-top: 0.75rem;
+}
+
+.jogo-card p {
+  padding: 0.25rem 0.7rem;
+  border-radius: var(--raio-total);
+  background: var(--verde-50);
+  color: var(--verde-800);
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.5;
+}

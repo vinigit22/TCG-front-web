@@ -1,0 +1,124 @@
+.topo {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  gap: 1.25rem;
+}
+
+@media (max-width: 900px) {
+  .topo {
+    grid-template-columns: 1fr;
+  }
+}
+
+.conexao {
+  display: flex;
+  gap: 1rem;
+  padding: 1.25rem;
+}
+
+.conexao-icone {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--verde-100);
+  color: var(--verde-800);
+}
+
+.conexao-icone.mock {
+  background: var(--ambar-100);
+  color: var(--ambar-700);
+}
+
+.conexao h2 {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.conexao p {
+  margin-top: 0.3rem;
+  font-size: 0.875rem;
+  color: var(--cor-texto-2);
+}
+
+code {
+  padding: 0.05rem 0.35rem;
+  border-radius: 6px;
+  background: var(--tinta-100);
+  font-size: 0.78rem;
+}
+
+.estado-geral {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 1.25rem;
+  background: linear-gradient(135deg, var(--verde-50), #fff);
+  border-color: var(--verde-200);
+}
+
+.estado-geral.atencao {
+  background: linear-gradient(135deg, var(--ambar-100), #fff);
+  border-color: #f7d9a0;
+}
+
+.estado-geral.ruim {
+  background: linear-gradient(135deg, var(--vermelho-100), #fff);
+  border-color: #f6c3c7;
+}
+
+.estado-numero {
+  font-size: 2.2rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.estado-numero small {
+  font-size: 1rem;
+  color: var(--cor-texto-3);
+}
+
+.estado-geral p {
+  margin-top: 0.4rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--cor-texto-2);
+}
+
+.servicos {
+  margin-top: 0.6rem;
+  padding-bottom: 0.4rem;
+}
+
+.servico-icone {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--roxo-50);
+  color: var(--roxo-600);
+}
+
+.detalhe {
+  max-width: 260px;
+  font-size: 0.8125rem;
+  text-align: right;
+}
+
+.ms {
+  width: 64px;
+  font-size: 0.8125rem;
+  text-align: right;
+  color: var(--cor-texto-2);
+}
+
+@media (max-width: 760px) {
+  .detalhe {
+    display: none;
+  }
+}

@@ -1,0 +1,204 @@
+<div class="pagina">
+  <header class="pagina-cabecalho">
+    <div>
+      <p class="data-hoje">{{ hoje | date: "EEEE, d 'de' MMMM" }}</p>
+      <h1>{{ saudacao }}, {{ loja.dados()?.nome ?? conta()?.nome }}</h1>
+      <p>Seus torneios, inscrições e eventos num só lugar.</p>
+    </div>
+    <div class="pagina-acoes">
+      <a routerLink="/painel/eventos/novo" class="btn btn-secundario">
+        <app-icone nome="calendario" [tamanho]="16" />
+        Novo evento
+      </a>
+      <a routerLink="/painel/torneios/novo" class="btn btn-primario">
+        <app-icone nome="mais" [tamanho]="16" />
+        Novo torneio
+      </a>
+    </div>
+  </header>
+
+  @if (loja.dados(); as dadosLoja) {
+    @if (!dadosLoja.verificada) {
+      <div class="faixa">
+        <app-icone nome="escudo" />
+        <p>
+          <strong>Sua loja ainda não tem o selo de verificada.</strong>
+          A equipe TopDeck confere os dados e o selo aparece para os jogadores no app.
+          <a routerLink="/painel/loja">Revise o perfil da loja</a>.
+        </p>
+      </div>
+    }
+  }
+
+  <section
+    class="grade-kpi"
+    aria-label="Resumo"
+    [class.recarregando]="torneios.carregando() && torneios.dados()"
+  >
+    @if (torneios.dados() === undefined && torneios.carregando()) {
+      @for (item of [1, 2, 3, 4]; track item) {
+        <div class="kpi"><div class="esqueleto" style="height: 76px"></div></div>
+      }
+    } @else {
+      <div class="kpi">
+        <span class="kpi-rotulo"><app-icone nome="trofeu" [tamanho]="16" /> Torneios ativos</span>
+        <span class="kpi-valor">{{ indicadores().ativos }}</span>
+        <span class="kpi-detalhe">{{ indicadores().abertos }} com inscrições abertas</span>
+      </div>
+      <div class="kpi">
+        <span class="kpi-rotulo"
+          ><app-icone nome="usuarios" [tamanho]="16" /> Jogadores inscritos</span
+        >
+        <span class="kpi-valor">{{ indicadores().inscritos }}</span>
+        <span class="kpi-detalhe">somando os torneios ativos</span>
+      </div>
+      <div class="kpi">
+        <span class="kpi-rotulo"><app-icone nome="cartas" [tamanho]="16" /> Vagas disponíveis</span>
+        <span class="kpi-valor">{{ indicadores().vagas }}</span>
+        <span class="kpi-detalhe">nos torneios com inscrições abertas</span>
+      </div>
+      <div class="kpi">
+        <span class="kpi-rotulo"
+          ><app-icone nome="calendario" [tamanho]="16" /> Próximos eventos</span
+        >
+        <span class="kpi-valor">{{ indicadores().eventos }}</span>
+        <span class="kpi-detalhe">
+          @if (indicadores().proximoEvento; as evento) {
+            {{ evento.titulo }}, {{ evento.dataInicio | date: "d 'de' MMM" }}
+          } @else {
+            nenhum evento publicado
+          }
+        </span>
+      </div>
+    }
+  </section>
+
+  <div class="grade-2">
+    <section class="cartao">
+      <header class="cartao-cabecalho">
+        <div>
+          <h2>Próximos torneios</h2>
+          <p>Rascunhos e torneios em andamento, por data</p>
+        </div>
+        <a routerLink="/painel/torneios" class="btn btn-fantasma btn-sm">
+          Ver todos
+          <app-icone nome="seta-direita" [tamanho]="15" />
+        </a>
+      </header>
+
+      @if (torneios.erro()) {
+        <app-estado-vazio
+          [erro]="true"
+          titulo="Não foi possível carregar os torneios"
+          [texto]="torneios.erro()!"
+        >
+          <button type="button" class="btn btn-secundario btn-sm" (click)="torneios.recarregar()">
+            Tentar de novo
+          </button>
+        </app-estado-vazio>
+      } @else if (torneios.dados() === undefined) {
+        <div class="cartao-corpo carregando-lista">
+          @for (item of [1, 2, 3]; track item) {
+            <div class="esqueleto" style="height: 52px"></div>
+          }
+        </div>
+      } @else if (proximos().length === 0) {
+        <app-estado-vazio
+          icone="trofeu"
+          titulo="Nenhum torneio por aqui ainda"
+          texto="Crie o primeiro torneio: ele nasce como rascunho e só aparece no app quando você abrir as inscrições."
+        >
+          <a routerLink="/painel/torneios/novo" class="btn btn-primario btn-sm">
+            <app-icone nome="mais" [tamanho]="15" />
+            Criar torneio
+          </a>
+        </app-estado-vazio>
+      } @else {
+        <ul class="lista torneios">
+          @for (torneio of proximos(); track torneio.id) {
+            <li>
+              <a class="lista-item" [routerLink]="['/painel/torneios', torneio.id]">
+                <span class="data-bloco">
+                  <b>{{ torneio.dataInicio | date: 'dd' }}</b>
+                  <small>{{ torneio.dataInicio | date: 'MMM' }}</small>
+                </span>
+                <span class="principal-item">
+                  <strong class="truncar">{{ torneio.titulo }}</strong>
+                  <span class="secundario truncar">
+                    {{ torneio.jogo.nome }}
+                    @if (torneio.formato) {
+                      · {{ torneio.formato.nome }}
+                    }
+                    · {{ torneio.dataInicio | date: 'HH:mm' }}
+                  </span>
+                </span>
+                <app-medidor
+                  class="vagas"
+                  [ocupadas]="torneio.vagasOcupadas ?? 0"
+                  [total]="torneio.vagasMax"
+                />
+                <app-selo-torneio [status]="torneio.status" />
+              </a>
+            </li>
+          }
+        </ul>
+      }
+    </section>
+
+    <div class="coluna">
+      <section class="cartao">
+        <header class="cartao-cabecalho">
+          <div>
+            <h2>Precisa de atenção</h2>
+            <p>O próximo passo de cada torneio</p>
+          </div>
+        </header>
+        @if (torneios.dados() !== undefined && tarefas().length === 0) {
+          <div class="tudo-certo">
+            <span><app-icone nome="check" [tamanho]="18" /></span>
+            Tudo em dia por aqui.
+          </div>
+        } @else {
+          <ul class="lista tarefas">
+            @for (tarefa of tarefas(); track $index) {
+              <li>
+                <a class="lista-item" [routerLink]="tarefa.link" [queryParams]="tarefa.queryParams">
+                  <span class="tarefa-icone"
+                    ><app-icone [nome]="tarefa.icone" [tamanho]="16"
+                  /></span>
+                  <span class="principal-item">
+                    <strong class="truncar">{{ tarefa.titulo }}</strong>
+                    <span class="secundario">{{ tarefa.texto }}</span>
+                  </span>
+                  <app-icone nome="chevron-direita" [tamanho]="16" class="texto-3" />
+                </a>
+              </li>
+            }
+          </ul>
+        }
+      </section>
+
+      <section class="cartao">
+        <header class="cartao-cabecalho">
+          <h2>Notificações</h2>
+          <a routerLink="/painel/notificacoes" class="btn btn-fantasma btn-sm">Ver todas</a>
+        </header>
+        @if (notificacoes.dados() !== undefined && ultimasNotificacoes().length === 0) {
+          <app-estado-vazio [compacto]="true" icone="sino" titulo="Nenhuma notificação" />
+        } @else {
+          <ul class="lista">
+            @for (notificacao of ultimasNotificacoes(); track notificacao.id) {
+              <li class="lista-item notificacao" [class.nao-lida]="!notificacao.lida">
+                <span class="principal-item">
+                  <strong>{{ notificacao.titulo }}</strong>
+                  <span class="secundario">{{ notificacao.mensagem }}</span>
+                  <span class="secundario quando">{{ tempoRelativo(notificacao.criadoEm) }}</span>
+                </span>
+              </li>
+            }
+          </ul>
+        }
+      </section>
+    </div>
+  </div>
+</div>

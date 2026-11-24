@@ -1,0 +1,145 @@
+<div class="pagina">
+  <header class="pagina-cabecalho">
+    <div>
+      <h1>Lojas</h1>
+      <p>
+        Confira os dados de cada loja e dê o selo de verificada. O selo aparece ao lado do nome da
+        loja no app.
+      </p>
+    </div>
+  </header>
+
+  <section class="cartao">
+    <nav class="abas abas-cartao" aria-label="Filtrar lojas">
+      @for (item of filtros; track item.id) {
+        <button type="button" [class.ativa]="filtro() === item.id" (click)="filtro.set(item.id)">
+          {{ item.rotulo }}
+          <span class="contador">{{ contagem()[item.id] }}</span>
+        </button>
+      }
+    </nav>
+    <div class="ferramentas barra">
+      <div class="controle-grupo busca">
+        <span class="controle-prefixo"><app-icone nome="busca" [tamanho]="16" /></span>
+        <input
+          class="controle"
+          type="search"
+          placeholder="Nome, cidade ou slug"
+          aria-label="Buscar loja"
+          [value]="busca()"
+          (input)="busca.set($any($event.target).value)"
+        />
+      </div>
+    </div>
+
+    @if (lojas.erro()) {
+      <app-estado-vazio
+        [erro]="true"
+        titulo="Não foi possível carregar as lojas"
+        [texto]="lojas.erro()!"
+      />
+    } @else if (lojas.dados() === undefined) {
+      <div class="cartao-corpo"><div class="esqueleto" style="height: 180px"></div></div>
+    } @else if (visiveis().length === 0) {
+      <app-estado-vazio
+        icone="loja"
+        [titulo]="filtro() === 'pendentes' ? 'Nenhuma loja pendente' : 'Nenhuma loja encontrada'"
+      />
+    } @else {
+      <div class="tabela-envoltorio">
+        <table class="tabela">
+          <thead>
+            <tr>
+              <th>Loja</th>
+              <th>Cidade</th>
+              <th>Contato</th>
+              <th class="numeros">Torneios</th>
+              <th>Verificação</th>
+              <th>Desde</th>
+              <th><span class="sr-only">Ações</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of visiveis(); track item.loja.contaId) {
+              <tr [class.recarregando]="ocupada() === item.loja.contaId">
+                <td>
+                  <div class="pessoa">
+                    <span class="avatar">{{ iniciais(item.loja.nome) }}</span>
+                    <div>
+                      <strong>{{ item.loja.nome }}</strong>
+                      <span>{{ item.loja.slug }}</span>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  @if (item.loja.endereco; as endereco) {
+                    {{ endereco.cidade }}/{{ endereco.estado }}
+                  } @else {
+                    <span class="faltando"
+                      ><app-icone nome="alerta" [tamanho]="14" /> Sem endereço</span
+                    >
+                  }
+                </td>
+                <td class="contato">
+                  <span>{{ item.conta?.email ?? '—' }}</span>
+                  <span class="texto-3">{{ item.loja.telefone ?? 'sem telefone' }}</span>
+                </td>
+                <td class="numeros">
+                  {{ item.torneios.total }}
+                  @if (item.torneios.ativos) {
+                    <span class="ativos">{{ item.torneios.ativos }} ativos</span>
+                  }
+                </td>
+                <td>
+                  @if (item.loja.verificada) {
+                    <span class="selo selo-verde"
+                      ><app-icone nome="verificado" [tamanho]="13" /> Verificada</span
+                    >
+                  } @else {
+                    <button
+                      type="button"
+                      class="btn btn-secundario btn-sm"
+                      (click)="alterarVerificacao(item.loja, true)"
+                    >
+                      <app-icone nome="escudo-check" [tamanho]="15" />
+                      Verificar
+                    </button>
+                  }
+                </td>
+                <td class="texto-2">{{ item.loja.criadoEm | date: 'dd/MM/yyyy' }}</td>
+                <td class="acoes">
+                  <app-menu-acoes [pequeno]="true">
+                    <button
+                      type="button"
+                      role="menuitem"
+                      [routerLink]="['/admin/torneios']"
+                      [queryParams]="{ loja: item.loja.contaId }"
+                    >
+                      <app-icone nome="trofeu" [tamanho]="16" />
+                      Ver torneios da loja
+                    </button>
+                    @if (item.loja.verificada) {
+                      <button type="button" role="menuitem" (click)="removerSelo(item.loja)">
+                        <app-icone nome="escudo" [tamanho]="16" />
+                        Remover selo
+                      </button>
+                    }
+                    <button
+                      type="button"
+                      role="menuitem"
+                      class="perigo"
+                      (click)="excluir(item.loja)"
+                    >
+                      <app-icone nome="lixeira" [tamanho]="16" />
+                      Excluir loja
+                    </button>
+                  </app-menu-acoes>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+</div>

@@ -1,0 +1,251 @@
+<div class="pagina">
+  <header class="pagina-cabecalho">
+    <div>
+      <h1>Catálogo de jogos</h1>
+      <p>
+        Os jogos e formatos que as lojas escolhem ao criar torneios. Jogo desativado não aceita
+        torneios novos.
+      </p>
+    </div>
+    <div class="pagina-acoes">
+      <button type="button" class="btn btn-primario" (click)="novoJogo()">
+        <app-icone nome="mais" [tamanho]="16" />
+        Novo jogo
+      </button>
+    </div>
+  </header>
+
+  @if (jogos.erro()) {
+    <section class="cartao">
+      <app-estado-vazio
+        [erro]="true"
+        titulo="Não foi possível carregar o catálogo"
+        [texto]="jogos.erro()!"
+      />
+    </section>
+  } @else {
+    <div class="catalogo">
+      <section class="cartao jogos" aria-label="Jogos">
+        @if (jogos.dados() === undefined) {
+          <div class="cartao-corpo"><div class="esqueleto" style="height: 260px"></div></div>
+        } @else {
+          <ul class="lista">
+            @for (jogo of jogos.dados(); track jogo.id) {
+              <li>
+                <button
+                  type="button"
+                  class="jogo"
+                  [class.selecionado]="selecionado()?.id === jogo.id"
+                  (click)="selecionadoId.set(jogo.id)"
+                >
+                  <span class="placa">
+                    @if (logoDoJogo(jogo); as logo) {
+                      <img [src]="logo" [alt]="''" />
+                    } @else {
+                      <b>{{ iniciais(jogo.nome) }}</b>
+                    }
+                  </span>
+                  <span class="principal-item">
+                    <strong class="truncar">{{ jogo.nome }}</strong>
+                    <span class="secundario"
+                      >{{ formatosPorJogo().get(jogo.id)?.length ?? 0 }} formatos ·
+                      {{ jogo.slug }}</span
+                    >
+                  </span>
+                  @if (!jogo.ativo) {
+                    <span class="selo">Inativo</span>
+                  }
+                </button>
+              </li>
+            }
+          </ul>
+        }
+      </section>
+
+      <section class="cartao detalhe" aria-live="polite">
+        @if (selecionado(); as jogo) {
+          <header class="detalhe-topo">
+            <span class="placa grande">
+              @if (logoDoJogo(jogo); as logo) {
+                <img [src]="logo" alt="" />
+              } @else {
+                <b>{{ iniciais(jogo.nome) }}</b>
+              }
+            </span>
+            <div class="detalhe-titulo">
+              <h2>{{ jogo.nome }}</h2>
+              <p>
+                slug <code>{{ jogo.slug }}</code>
+              </p>
+            </div>
+            <label class="interruptor">
+              <input type="checkbox" [checked]="jogo.ativo" (change)="alternarJogo(jogo)" />
+              {{ jogo.ativo ? 'Ativo' : 'Inativo' }}
+            </label>
+            <button type="button" class="btn btn-secundario btn-sm" (click)="editarJogo(jogo)">
+              <app-icone nome="editar" [tamanho]="15" />
+              Editar
+            </button>
+            <button
+              type="button"
+              class="btn btn-perigo-suave btn-sm btn-icone"
+              (click)="excluirJogo(jogo)"
+              aria-label="Excluir jogo"
+            >
+              <app-icone nome="lixeira" [tamanho]="15" />
+            </button>
+          </header>
+
+          <div class="formatos">
+            <h3>Formatos</h3>
+            @if (formatosDoSelecionado().length === 0) {
+              <p class="texto-3 sem-formatos">
+                Nenhum formato ainda. Torneios deste jogo ficam com "formato livre".
+              </p>
+            } @else {
+              <ul class="lista-formatos">
+                @for (formato of formatosDoSelecionado(); track formato.id) {
+                  <li [class.inativo]="!formato.ativo">
+                    <span class="nome-formato">{{ formato.nome }}</span>
+                    <label class="interruptor">
+                      <input
+                        type="checkbox"
+                        [checked]="formato.ativo"
+                        (change)="alternarFormato(formato)"
+                      />
+                      <span class="sr-only">Formato ativo</span>
+                    </label>
+                    <button
+                      type="button"
+                      class="btn btn-fantasma btn-sm btn-icone"
+                      (click)="editarFormato(formato)"
+                      aria-label="Renomear formato"
+                    >
+                      <app-icone nome="editar" [tamanho]="15" />
+                    </button>
+                    <button
+                      type="button"
+                      class="btn btn-perigo-suave btn-sm btn-icone"
+                      (click)="excluirFormato(formato)"
+                      aria-label="Excluir formato"
+                    >
+                      <app-icone nome="lixeira" [tamanho]="15" />
+                    </button>
+                  </li>
+                }
+              </ul>
+            }
+            <form class="novo-formato" (ngSubmit)="adicionarFormato()">
+              <input
+                class="controle"
+                name="novoFormato"
+                [(ngModel)]="novoFormato"
+                placeholder="Novo formato (ex.: Commander)"
+                maxlength="100"
+                aria-label="Nome do novo formato"
+              />
+              <button type="submit" class="btn btn-secundario" [disabled]="!novoFormato.trim()">
+                <app-icone nome="mais" [tamanho]="15" />
+                Adicionar
+              </button>
+            </form>
+          </div>
+        } @else if (jogos.dados()) {
+          <app-estado-vazio
+            icone="grade"
+            titulo="Nenhum jogo no catálogo"
+            texto="Adicione o primeiro jogo para as lojas criarem torneios."
+          />
+        }
+      </section>
+    </div>
+  }
+</div>
+
+<app-modal
+  [aberto]="jogoEmEdicao() !== null"
+  (abertoChange)="!$event && jogoEmEdicao.set(null)"
+  [titulo]="jogoEmEdicao()?.id ? 'Editar jogo' : 'Novo jogo'"
+>
+  @if (jogoEmEdicao(); as rascunho) {
+    <form id="form-jogo" class="form-grade" (ngSubmit)="salvarJogo(rascunho)">
+      <label class="campo inteiro">
+        <span class="campo-rotulo">Nome</span>
+        <input
+          class="controle"
+          name="nome"
+          [(ngModel)]="rascunho.nome"
+          required
+          maxlength="100"
+          placeholder="Ex.: Disney Lorcana"
+        />
+      </label>
+      <label class="campo inteiro">
+        <span class="campo-rotulo">Slug <span class="opcional">(opcional)</span></span>
+        <input
+          class="controle"
+          name="slug"
+          [(ngModel)]="rascunho.slug"
+          maxlength="100"
+          [placeholder]="gerarSlug(rascunho.nome) || 'gerado do nome'"
+        />
+        <span class="campo-ajuda">Identificador usado nas URLs e nos logos do site.</span>
+      </label>
+      <label class="campo inteiro">
+        <span class="campo-rotulo">Ícone <span class="opcional">(URL, opcional)</span></span>
+        <input
+          class="controle"
+          name="icone"
+          type="url"
+          [(ngModel)]="rascunho.icone"
+          maxlength="500"
+          placeholder="https://..."
+        />
+      </label>
+      <label class="interruptor inteiro">
+        <input type="checkbox" name="ativo" [(ngModel)]="rascunho.ativo" />
+        Aceita torneios novos
+      </label>
+    </form>
+  }
+  <div rodape>
+    <button type="button" class="btn btn-secundario" (click)="jogoEmEdicao.set(null)">
+      Cancelar
+    </button>
+    <button type="submit" form="form-jogo" class="btn btn-primario" [attr.aria-busy]="salvando()">
+      Salvar
+    </button>
+  </div>
+</app-modal>
+
+<app-modal
+  [aberto]="formatoEmEdicao() !== null"
+  (abertoChange)="!$event && formatoEmEdicao.set(null)"
+  titulo="Renomear formato"
+>
+  <form id="form-formato" (ngSubmit)="salvarFormato()">
+    <label class="campo">
+      <span class="campo-rotulo">Nome do formato</span>
+      <input
+        class="controle"
+        name="nomeFormato"
+        [(ngModel)]="nomeFormatoEditado"
+        required
+        maxlength="100"
+      />
+    </label>
+  </form>
+  <div rodape>
+    <button type="button" class="btn btn-secundario" (click)="formatoEmEdicao.set(null)">
+      Cancelar
+    </button>
+    <button
+      type="submit"
+      form="form-formato"
+      class="btn btn-primario"
+      [attr.aria-busy]="salvando()"
+    >
+      Salvar
+    </button>
+  </div>
+</app-modal>

@@ -1,0 +1,166 @@
+.catalogo {
+  display: grid;
+  grid-template-columns: minmax(0, 360px) minmax(0, 1fr);
+  gap: 1.25rem;
+  align-items: start;
+}
+
+@media (max-width: 980px) {
+  .catalogo {
+    grid-template-columns: 1fr;
+  }
+}
+
+.jogos .lista {
+  padding: 0.4rem;
+}
+
+.jogos .lista > li + li {
+  border-top: 0;
+}
+
+.jogo {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  width: 100%;
+  padding: 0.6rem 0.7rem;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  background: none;
+  text-align: left;
+  transition: all var(--transicao);
+}
+
+.jogo:hover {
+  background: var(--tinta-50);
+}
+
+.jogo.selecionado {
+  border-color: var(--roxo-200);
+  background: var(--roxo-50);
+}
+
+.jogo strong {
+  display: block;
+  font-weight: 600;
+}
+
+.jogo .secundario {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--cor-texto-3);
+}
+
+.placa {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 52px;
+  height: 40px;
+  padding: 4px;
+  border-radius: 10px;
+  background: #fff;
+  border: 1px solid var(--cor-borda);
+  overflow: hidden;
+}
+
+.placa img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.placa b {
+  font-size: 0.8rem;
+  color: var(--roxo-700);
+}
+
+.placa.grande {
+  width: 92px;
+  height: 64px;
+  padding: 6px;
+  border-radius: 14px;
+}
+
+.detalhe-topo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem;
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+.detalhe-titulo {
+  flex: 1;
+  min-width: 160px;
+}
+
+.detalhe-titulo h2 {
+  font-size: 1.2rem;
+  font-weight: 800;
+}
+
+.detalhe-titulo p {
+  font-size: 0.8125rem;
+  color: var(--cor-texto-3);
+}
+
+code {
+  padding: 0.05rem 0.35rem;
+  border-radius: 6px;
+  background: var(--tinta-100);
+  font-size: 0.78rem;
+}
+
+.formatos {
+  padding: 1.25rem;
+}
+
+.formatos h3 {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--cor-texto-3);
+  margin-bottom: 0.6rem;
+}
+
+.lista-formatos {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lista-formatos li {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0.5rem 0.5rem 0.9rem;
+  border: 1px solid var(--cor-borda);
+  border-radius: 10px;
+}
+
+.nome-formato {
+  flex: 1;
+  font-weight: 600;
+}
+
+.inativo .nome-formato {
+  color: var(--tinta-400);
+  text-decoration: line-through;
+}
+
+.sem-formatos {
+  font-size: 0.875rem;
+}
+
+.novo-formato {
+  display: flex;
+  gap: 0.6rem;
+  margin-top: 1rem;
+}

@@ -1,0 +1,93 @@
+<div class="pagina">
+  <header class="pagina-cabecalho">
+    <div>
+      <h1>Eventos</h1>
+      <p>
+        Encontros que não são torneio: dia de troca, pré-lançamento, noite casual. Os jogadores
+        confirmam presença pelo app.
+      </p>
+    </div>
+    <div class="pagina-acoes">
+      <a routerLink="/painel/eventos/novo" class="btn btn-primario">
+        <app-icone nome="mais" [tamanho]="16" />
+        Novo evento
+      </a>
+    </div>
+  </header>
+
+  <div class="segmentado" role="group" aria-label="Filtrar eventos">
+    @for (item of filtros; track item.id) {
+      <button type="button" [class.ativa]="filtro() === item.id" (click)="filtro.set(item.id)">
+        {{ item.rotulo }}
+        <span class="contador">{{ contagem()[item.id] }}</span>
+      </button>
+    }
+  </div>
+
+  @if (eventos.erro()) {
+    <section class="cartao">
+      <app-estado-vazio
+        [erro]="true"
+        titulo="Não foi possível carregar os eventos"
+        [texto]="eventos.erro()!"
+      >
+        <button type="button" class="btn btn-secundario btn-sm" (click)="eventos.recarregar()">
+          Tentar de novo
+        </button>
+      </app-estado-vazio>
+    </section>
+  } @else if (eventos.dados() === undefined) {
+    <div class="grade">
+      @for (item of [1, 2, 3]; track item) {
+        <div class="esqueleto" style="height: 190px; border-radius: 16px"></div>
+      }
+    </div>
+  } @else if (visiveis().length === 0) {
+    <section class="cartao">
+      <app-estado-vazio
+        icone="calendario"
+        [titulo]="filtro() === 'proximos' ? 'Nenhum evento marcado' : 'Nada por aqui'"
+        texto="Que tal um dia de troca de cartas? É um ótimo jeito de trazer a comunidade para a loja."
+      >
+        <a routerLink="/painel/eventos/novo" class="btn btn-primario btn-sm">
+          <app-icone nome="mais" [tamanho]="15" />
+          Criar evento
+        </a>
+      </app-estado-vazio>
+    </section>
+  } @else {
+    <div class="grade">
+      @for (evento of visiveis(); track evento.id) {
+        <a class="cartao evento" [routerLink]="['/painel/eventos', evento.id]">
+          <div class="evento-topo">
+            <span class="data-bloco grande">
+              <b>{{ evento.dataInicio | date: 'dd' }}</b>
+              <small>{{ evento.dataInicio | date: 'MMM' }}</small>
+            </span>
+            <span class="selo" [class]="'selo-' + tomStatus[evento.status]">{{
+              rotuloStatus[evento.status]
+            }}</span>
+          </div>
+          <span class="tipo">
+            <app-icone [nome]="iconeTipo[evento.tipo]" [tamanho]="14" />
+            {{ rotuloTipo[evento.tipo] }}
+          </span>
+          <h2>{{ evento.titulo }}</h2>
+          <ul class="info">
+            <li>
+              <app-icone nome="relogio" [tamanho]="14" />
+              {{ evento.dataInicio | date: 'EEE, HH:mm' }}
+              @if (evento.dataFim) {
+                – {{ evento.dataFim | date: 'HH:mm' }}
+              }
+            </li>
+            <li>
+              <app-icone nome="usuarios" [tamanho]="14" />
+              {{ evento.vagasMax ? evento.vagasMax + ' vagas' : 'Sem limite de vagas' }}
+            </li>
+          </ul>
+        </a>
+      }
+    </div>
+  }
+</div>

@@ -1,0 +1,150 @@
+<div class="pagina">
+  <header class="pagina-cabecalho">
+    <div>
+      <h1>Administradores</h1>
+      <p>Quem da equipe TopDeck tem acesso a este painel.</p>
+    </div>
+    <div class="pagina-acoes">
+      <button type="button" class="btn btn-primario" (click)="abrirNovo()">
+        <app-icone nome="usuario-mais" [tamanho]="16" />
+        Novo administrador
+      </button>
+    </div>
+  </header>
+
+  <section class="cartao">
+    @if (administradores.erro()) {
+      <app-estado-vazio
+        [erro]="true"
+        titulo="Não foi possível carregar"
+        [texto]="administradores.erro()!"
+      />
+    } @else if (administradores.dados() === undefined) {
+      <div class="cartao-corpo"><div class="esqueleto" style="height: 120px"></div></div>
+    } @else {
+      <div class="tabela-envoltorio">
+        <table class="tabela">
+          <thead>
+            <tr>
+              <th>Administrador</th>
+              <th>Situação</th>
+              <th>Último acesso</th>
+              <th>Desde</th>
+              <th><span class="sr-only">Ações</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (linha of linhas(); track linha.admin.contaId) {
+              <tr>
+                <td>
+                  <div class="pessoa">
+                    <span class="avatar avatar-sm ambar">{{ iniciais(linha.admin.nome) }}</span>
+                    <div>
+                      <strong>{{ linha.admin.nome }}{{ linha.voce ? ' (você)' : '' }}</strong>
+                      <span>{{ linha.conta?.email ?? '—' }}</span>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <span
+                    class="selo"
+                    [class.selo-verde]="linha.conta?.ativo !== false"
+                    [class.selo-vermelho]="linha.conta?.ativo === false"
+                  >
+                    {{ linha.conta?.ativo === false ? 'Desativada' : 'Ativa' }}
+                  </span>
+                </td>
+                <td class="texto-2">
+                  {{ linha.conta?.ultimoLogin ? tempoRelativo(linha.conta!.ultimoLogin) : '—' }}
+                </td>
+                <td class="texto-2">{{ linha.admin.criadoEm | date: 'dd/MM/yyyy' }}</td>
+                <td class="acoes">
+                  <button
+                    type="button"
+                    class="btn btn-fantasma btn-sm"
+                    (click)="abrirEdicao(linha.admin)"
+                  >
+                    <app-icone nome="editar" [tamanho]="15" />
+                    Renomear
+                  </button>
+                  @if (!linha.voce) {
+                    <button
+                      type="button"
+                      class="btn btn-perigo-suave btn-sm"
+                      (click)="remover(linha.admin)"
+                    >
+                      <app-icone nome="lixeira" [tamanho]="15" />
+                      Remover
+                    </button>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+</div>
+
+<app-modal
+  [(aberto)]="criando"
+  titulo="Novo administrador"
+  descricao="Cria uma conta ADMIN. Passe a senha para a pessoa por um canal seguro."
+>
+  <form id="form-admin" class="form-grade" [formGroup]="formNovo" (ngSubmit)="criar()" novalidate>
+    <label class="campo inteiro">
+      <span class="campo-rotulo">Nome</span>
+      <input class="controle" formControlName="nome" maxlength="150" />
+      @if (erro('nome', 'O nome'); as mensagem) {
+        <span class="campo-erro">{{ mensagem }}</span>
+      }
+    </label>
+    <label class="campo inteiro">
+      <span class="campo-rotulo">Email</span>
+      <input class="controle" type="email" formControlName="email" autocomplete="off" />
+      @if (erro('email', 'O email'); as mensagem) {
+        <span class="campo-erro">{{ mensagem }}</span>
+      }
+    </label>
+    <label class="campo inteiro">
+      <span class="campo-rotulo">Senha inicial</span>
+      <input class="controle" type="password" formControlName="senha" autocomplete="new-password" />
+      @if (erro('senha', 'A senha'); as mensagem) {
+        <span class="campo-erro">{{ mensagem }}</span>
+      } @else {
+        <span class="campo-ajuda">Pelo menos 6 caracteres. A pessoa pode trocar em Segurança.</span>
+      }
+    </label>
+  </form>
+  <div rodape>
+    <button type="button" class="btn btn-secundario" (click)="criando.set(false)">Cancelar</button>
+    <button type="submit" form="form-admin" class="btn btn-primario" [attr.aria-busy]="salvando()">
+      Criar administrador
+    </button>
+  </div>
+</app-modal>
+
+<app-modal
+  [aberto]="editando() !== null"
+  (abertoChange)="!$event && editando.set(null)"
+  titulo="Renomear administrador"
+>
+  <form id="form-renomear" (ngSubmit)="renomear()">
+    <label class="campo">
+      <span class="campo-rotulo">Nome</span>
+      <input class="controle" [formControl]="nomeEditado" maxlength="150" />
+    </label>
+  </form>
+  <div rodape>
+    <button type="button" class="btn btn-secundario" (click)="editando.set(null)">Cancelar</button>
+    <button
+      type="submit"
+      form="form-renomear"
+      class="btn btn-primario"
+      [attr.aria-busy]="salvando()"
+    >
+      Salvar
+    </button>
+  </div>
+</app-modal>

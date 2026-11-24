@@ -1,0 +1,37 @@
+.barra {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+.filtro {
+  width: auto;
+  min-width: 170px;
+}
+
+.titulo {
+  display: block;
+  font-weight: 600;
+}
+
+.sub {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--cor-texto-3);
+}
+
+.verificada {
+  display: inline-flex;
+  vertical-align: -2px;
+  color: var(--verde-500);
+}
+
+.data {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  color: var(--cor-texto-2);
+}
+
+app-medidor {
+  display: block;
+  width: 140px;
+}

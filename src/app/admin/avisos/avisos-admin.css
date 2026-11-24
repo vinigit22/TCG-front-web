@@ -1,0 +1,123 @@
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+@media (max-width: 1180px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+fieldset {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+.publicos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.publicos .opcao span {
+  width: 100%;
+  height: 46px;
+}
+
+.alcance {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: 10px;
+  background: var(--roxo-50);
+  color: var(--roxo-800);
+  font-size: 0.875rem;
+}
+
+.contador-campo {
+  display: flex;
+  justify-content: space-between;
+}
+
+.contador-campo .texto-3 {
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.enviando {
+  margin-right: auto;
+  align-self: center;
+  font-size: 0.875rem;
+  color: var(--cor-texto-2);
+}
+
+/* Prévia */
+.previa {
+  position: sticky;
+  top: 84px;
+}
+
+.previa-rotulo {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.65rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--cor-texto-3);
+}
+
+.celular {
+  padding: 1.5rem 0.9rem 4rem;
+  border-radius: 34px;
+  background:
+    radial-gradient(240px 200px at 80% 0%, rgb(52 207 150 / 0.45), transparent 70%),
+    linear-gradient(170deg, var(--roxo-700), var(--roxo-950));
+  border: 6px solid var(--tinta-900);
+  box-shadow: var(--sombra-lg);
+}
+
+.notificacao {
+  display: flex;
+  gap: 0.65rem;
+  padding: 0.75rem;
+  border-radius: 16px;
+  background: rgb(255 255 255 / 0.88);
+  backdrop-filter: blur(8px);
+  font-size: 0.8125rem;
+  overflow-wrap: anywhere;
+}
+
+.app-icone-mini {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: var(--roxo-600);
+  color: #fff;
+}
+
+.app-nome {
+  font-size: 0.7rem;
+  color: var(--cor-texto-3);
+}
+
+.notificacao strong {
+  display: block;
+  margin-top: 0.1rem;
+}
+
+.notificacao p:last-child {
+  margin-top: 0.15rem;
+  color: var(--cor-texto-2);
+}

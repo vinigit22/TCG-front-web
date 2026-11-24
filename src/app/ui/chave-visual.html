@@ -1,0 +1,63 @@
+<div class="rolagem">
+  <div class="chave">
+    @for (rodada of rodadas(); track rodada.numero; let ultima = $last) {
+      <section class="rodada" [class.ultima]="ultima">
+        <h4>
+          @if (ultima) {
+            <app-icone nome="trofeu" [tamanho]="14" />
+          }
+          {{ rodada.nome }}
+        </h4>
+        <div class="partidas">
+          @for (partida of rodada.partidas; track partida.partidaId) {
+            <div class="slot">
+              <button
+                type="button"
+                class="partida"
+                [class]="'partida ' + classeEstado(partida)"
+                [class.estatica]="!interativa()"
+                [disabled]="!interativa()"
+                [attr.aria-label]="descricao(partida)"
+                (click)="selecionar.emit(partida)"
+              >
+                <span class="partida-topo">
+                  <span>Mesa {{ partida.mesa }}</span>
+                  <span class="estado">{{ estado(partida) }}</span>
+                </span>
+                @for (
+                  lado of [partida.jogadorA, partida.jogadorB];
+                  track $index;
+                  let primeiro = $first
+                ) {
+                  <span
+                    class="lado"
+                    [class.vencedor]="venceu(partida, lado)"
+                    [class.perdedor]="perdeu(partida, lado)"
+                    [class.vazio]="!lado"
+                  >
+                    <span class="mini-avatar">{{ lado ? iniciais(lado) : '–' }}</span>
+                    <span class="nome">
+                      @if (lado) {
+                        {{ lado }}
+                      } @else if (ehBye(partida)) {
+                        sem adversário
+                      } @else {
+                        a definir
+                      }
+                    </span>
+                    @if (venceu(partida, lado)) {
+                      <app-icone nome="check" [tamanho]="14" [traco]="3" class="check" />
+                    }
+                    <span class="placar">{{
+                      lado ? (primeiro ? partida.gamesA : partida.gamesB) : ''
+                    }}</span>
+                  </span>
+                }
+              </button>
+            </div>
+          }
+        </div>
+      </section>
+    }
+  </div>
+</div>

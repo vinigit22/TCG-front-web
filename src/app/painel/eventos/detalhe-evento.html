@@ -1,0 +1,184 @@
+<div class="pagina">
+  <a class="voltar" routerLink="/painel/eventos">
+    <app-icone nome="seta-esquerda" [tamanho]="15" />
+    Eventos
+  </a>
+
+  @if (evento.erro() && !evento.dados()) {
+    <section class="cartao">
+      <app-estado-vazio
+        [erro]="true"
+        titulo="Não foi possível abrir o evento"
+        [texto]="evento.erro()!"
+      />
+    </section>
+  } @else if (!evento.dados()) {
+    <div class="esqueleto" style="height: 200px; border-radius: 16px"></div>
+  } @else {
+    @let e = evento.dados()!;
+    <header class="cartao cabecalho-evento" [class.recarregando]="evento.carregando()">
+      <span class="data-bloco grande">
+        <b>{{ e.dataInicio | date: 'dd' }}</b>
+        <small>{{ e.dataInicio | date: 'MMM' }}</small>
+      </span>
+      <div class="titulo-bloco">
+        <div class="selos">
+          <span class="selo" [class]="'selo-' + tomStatus[e.status]">{{
+            rotuloStatus[e.status]
+          }}</span>
+          <span class="selo selo-verde sem-ponto">
+            <app-icone [nome]="iconeTipo[e.tipo]" [tamanho]="13" />
+            {{ rotuloTipo[e.tipo] }}
+          </span>
+        </div>
+        <h1>{{ e.titulo }}</h1>
+        <ul class="meta">
+          <li>
+            <app-icone nome="relogio" [tamanho]="15" />
+            <span class="primeira-maiuscula">{{
+              e.dataInicio | date: "EEEE, d 'de' MMMM 'às' HH:mm"
+            }}</span>
+            @if (e.dataFim) {
+              até {{ e.dataFim | date: 'HH:mm' }}
+            }
+          </li>
+          <li>
+            <app-icone nome="local" [tamanho]="15" />
+            @if (e.endereco) {
+              {{ enderecoEmTexto(e.endereco) }}
+            } @else {
+              Na loja{{
+                loja.dados()?.endereco ? ' · ' + enderecoEmTexto(loja.dados()!.endereco) : ''
+              }}
+            }
+          </li>
+        </ul>
+        @if (e.descricao) {
+          <p class="descricao">{{ e.descricao }}</p>
+        }
+      </div>
+      <div class="pagina-acoes">
+        @if (e.status !== 'CANCELADO' && e.status !== 'ENCERRADO') {
+          <a class="btn btn-secundario" [routerLink]="['/painel/eventos', id, 'editar']">
+            <app-icone nome="editar" [tamanho]="15" />
+            Editar
+          </a>
+        }
+        @for (acao of acoes().slice(0, 1); track acao.destino) {
+          <button
+            type="button"
+            class="btn btn-primario"
+            [attr.aria-busy]="ocupado()"
+            (click)="alterarStatus(acao.destino)"
+          >
+            <app-icone [nome]="acao.icone" [tamanho]="15" />
+            {{ acao.rotulo }}
+          </button>
+        }
+        <app-menu-acoes>
+          @for (acao of acoes().slice(1); track acao.destino) {
+            <button type="button" role="menuitem" (click)="alterarStatus(acao.destino)">
+              <app-icone [nome]="acao.icone" [tamanho]="16" />
+              {{ acao.rotulo }}
+            </button>
+          }
+          @if (e.status !== 'CANCELADO' && e.status !== 'ENCERRADO') {
+            <button type="button" role="menuitem" class="perigo" (click)="cancelarEvento()">
+              <app-icone nome="cancelar" [tamanho]="16" />
+              Cancelar evento
+            </button>
+          }
+          <button type="button" role="menuitem" class="perigo" (click)="excluir()">
+            <app-icone nome="lixeira" [tamanho]="16" />
+            Excluir evento
+          </button>
+        </app-menu-acoes>
+      </div>
+    </header>
+
+    <section class="cartao">
+      <header class="cartao-cabecalho">
+        <div>
+          <h2>Presenças confirmadas</h2>
+          <p>
+            {{ confirmados() }} {{ confirmados() === 1 ? 'pessoa' : 'pessoas' }}
+            @if (e.vagasMax) {
+              de {{ e.vagasMax }} vagas
+            } @else {
+              · sem limite de vagas
+            }
+          </p>
+        </div>
+        @if (aberto()) {
+          <button type="button" class="btn btn-secundario btn-sm" (click)="buscaAberta.set(true)">
+            <app-icone nome="usuario-mais" [tamanho]="15" />
+            Confirmar jogador
+          </button>
+        }
+      </header>
+      @if (e.vagasMax) {
+        <div class="medidor-evento">
+          <div class="medidor-trilho">
+            <div
+              class="medidor-preenchimento"
+              [style.width.%]="(confirmados() / e.vagasMax) * 100"
+            ></div>
+          </div>
+        </div>
+      }
+
+      @if (participacoes.dados() === undefined) {
+        <div class="cartao-corpo"><div class="esqueleto" style="height: 120px"></div></div>
+      } @else if ((participacoes.dados() ?? []).length === 0) {
+        <app-estado-vazio
+          icone="usuarios"
+          titulo="Ninguém confirmou ainda"
+          [texto]="
+            aberto()
+              ? 'Os jogadores confirmam presença pelo app.'
+              : 'Publique o evento para os jogadores confirmarem presença pelo app.'
+          "
+          [compacto]="true"
+        />
+      } @else {
+        <ul class="lista participantes">
+          @for (participacao of participacoes.dados(); track participacao.id) {
+            <li class="lista-item" [class.cancelada]="participacao.status === 'CANCELADO'">
+              <span class="avatar avatar-sm verde">{{ iniciais(participacao.jogador.nome) }}</span>
+              <span class="principal-item">
+                <strong>{{ participacao.jogador.nome }}</strong>
+                <span class="secundario"
+                  >&#64;{{ participacao.jogador.nickname }} · desde
+                  {{ participacao.inscritoEm | date: 'dd/MM HH:mm' }}</span
+                >
+              </span>
+              <span
+                class="selo"
+                [class.selo-verde]="participacao.status === 'CONFIRMADO'"
+                [class.selo-vermelho]="participacao.status === 'CANCELADO'"
+              >
+                {{ participacao.status === 'CONFIRMADO' ? 'Confirmado' : 'Cancelado' }}
+              </span>
+              <button
+                type="button"
+                class="btn btn-fantasma btn-sm"
+                (click)="alternarParticipacao(participacao)"
+              >
+                {{ participacao.status === 'CONFIRMADO' ? 'Cancelar' : 'Confirmar' }}
+              </button>
+            </li>
+          }
+        </ul>
+      }
+    </section>
+  }
+</div>
+
+<app-buscar-jogador
+  [(aberto)]="buscaAberta"
+  titulo="Confirmar presença"
+  descricao="Busque o jogador pelo nickname do app."
+  acao="Confirmar presença"
+  [ocupado]="inscrevendo()"
+  (escolher)="inscrever($event)"
+/>

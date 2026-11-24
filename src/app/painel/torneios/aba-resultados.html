@@ -1,0 +1,84 @@
+@if (carregando()) {
+  <div class="cartao-corpo"><div class="esqueleto" style="height: 220px"></div></div>
+} @else if (resultados().length === 0) {
+  <app-estado-vazio
+    icone="trofeu"
+    [titulo]="
+      torneio().status === 'FINALIZADO'
+        ? 'Sem classificação registrada'
+        : 'A classificação sai no fim'
+    "
+    texto="Quando a final for registrada, o pódio e a classificação são montados automaticamente e os troféus vão para o perfil dos jogadores."
+  />
+} @else {
+  <div class="podio" aria-label="Pódio">
+    @for (posicao of [podio().prata, podio().ouro, podio().bronze]; track $index) {
+      @if (posicao.length) {
+        <div class="degrau" [class]="'degrau ' + medalha(posicao[0].colocacao)">
+          <div class="jogadores">
+            @for (item of posicao; track item.id) {
+              <div class="jogador">
+                <span class="avatar avatar-lg">{{ iniciais(item.jogador.nome) }}</span>
+                <strong>{{ item.jogador.nome }}</strong>
+                <span>&#64;{{ item.jogador.nickname }}</span>
+              </div>
+            }
+          </div>
+          <div class="base">
+            <app-icone nome="trofeu" [tamanho]="18" />
+            {{ posicao[0].colocacao }}º
+          </div>
+        </div>
+      }
+    }
+  </div>
+
+  <div class="tabela-envoltorio">
+    <table class="tabela">
+      <thead>
+        <tr>
+          <th class="numeros">#</th>
+          <th>Jogador</th>
+          <th class="numeros">V</th>
+          <th class="numeros">D</th>
+          <th class="numeros">E</th>
+          <th>Prêmio recebido</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of ordenados(); track item.id) {
+          <tr [class.recarregando]="salvando() === item.id">
+            <td class="numeros">
+              <span class="posicao" [class]="'posicao ' + medalha(item.colocacao)"
+                >{{ item.colocacao }}º</span
+              >
+            </td>
+            <td>
+              <div class="pessoa">
+                <span class="avatar avatar-sm verde">{{ iniciais(item.jogador.nome) }}</span>
+                <div>
+                  <strong>{{ item.jogador.nome }}</strong>
+                  <span>&#64;{{ item.jogador.nickname }}</span>
+                </div>
+              </div>
+            </td>
+            <td class="numeros">{{ item.vitorias }}</td>
+            <td class="numeros">{{ item.derrotas }}</td>
+            <td class="numeros">{{ item.empates }}</td>
+            <td>
+              <input
+                class="controle premio"
+                [value]="item.premioRecebido ?? ''"
+                placeholder="Ex.: 3 boosters"
+                maxlength="255"
+                [attr.aria-label]="'Prêmio de ' + item.jogador.nome"
+                (change)="salvarPremio(item, $any($event.target).value)"
+                (keydown.enter)="$any($event.target).blur()"
+              />
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}
