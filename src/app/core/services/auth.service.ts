@@ -18,6 +18,7 @@ export class AuthService {
       .pipe(switchMap((resposta) => this.aceitar(resposta)));
   }
 
+<<<<<<< HEAD
   // A API responde 204 exista ou não a conta; o código chega por email só se o cadastro existir
   esqueciSenha(email: string): Observable<void> {
     return this.http.post<void>(urlApi('/auth/esqueci-senha'), { email });
@@ -31,6 +32,8 @@ export class AuthService {
     });
   }
 
+=======
+>>>>>>> abcfda923348b37a1fa8641fdcac16e3e41456f3
   // Cria a conta da loja e já entra com ela
   cadastrarLoja(dados: RegistroLojaRequest): Observable<ContaSessao> {
     return this.http

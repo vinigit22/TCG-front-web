@@ -1,7 +1,10 @@
 import { Routes } from '@angular/router';
 import { Cadastro } from './cadastro/cadastro';
 import { tipoContaGuard } from './core/autenticado.guard';
+<<<<<<< HEAD
 import { EsqueciSenha } from './esqueci-senha/esqueci-senha';
+=======
+>>>>>>> abcfda923348b37a1fa8641fdcac16e3e41456f3
 import { Home } from './home/home';
 import { Jogos } from './jogos/jogos';
 import { LayoutPublico } from './layout-publico/layout-publico';
@@ -24,7 +27,10 @@ export const routes: Routes = [
       { path: 'quem-somos', component: Quemsomos, title: 'Quem somos · TopDeck' },
       { path: 'torneios', component: Torneios, title: 'Torneios · TopDeck' },
       { path: 'login', component: Login, title: 'Entrar · TopDeck' },
+<<<<<<< HEAD
       { path: 'esqueci-senha', component: EsqueciSenha, title: 'Esqueci minha senha · TopDeck' },
+=======
+>>>>>>> abcfda923348b37a1fa8641fdcac16e3e41456f3
       { path: 'cadastro', component: Cadastro, title: 'Cadastre sua loja · TopDeck' },
     ],
   },
